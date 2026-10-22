@@ -110,6 +110,17 @@ input[type=range]{touch-action:pan-y}
 .hc{display:inline-flex;transition:transform .3s}.hc.o{transform:rotate(180deg)}
 .hx{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .32s cubic-bezier(.22,.8,.3,1),opacity .25s}
 .hx.on{grid-template-rows:1fr;opacity:1}.hx>div{overflow:hidden;min-height:0}
+
+.ic.open .chev{transform:rotate(180deg)}.ih .chev{width:30px;height:30px;display:grid;place-items:center}.ih .chev svg{width:18px;height:18px}
+.ip{margin-top:12px;padding-top:4px;border-top:1px solid var(--ln);animation:f .2s}.ip .grp{margin:10px 2px 4px}
+.mut{font-size:13px;color:var(--mut);padding:4px 2px}
+.xl{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 2px;border-bottom:1px solid var(--ln);font-weight:600;font-size:14px}.xl small{color:var(--mut);font-weight:400;font-size:12px;text-align:right}
+.lk{color:var(--ac);font-weight:600;font-size:14px;padding:8px 2px;display:block}
+.hr{display:grid;grid-template-columns:76px 1fr 1fr;gap:10px;align-items:center;font-size:12.5px;padding:5px 2px}.hh{color:var(--mut);font-size:11px;padding-bottom:0}
+.mb{display:flex;align-items:center;gap:6px}.mb b{width:14px;text-align:right}.mb s{flex:1;height:5px;border-radius:9px;background:var(--ln);position:relative;overflow:hidden}.mb s::after{content:"";position:absolute;inset:0;width:var(--w);background:var(--ac);border-radius:9px}.mb.pb s::after{background:var(--warn)}
+.hn{grid-column:1/-1;color:var(--mut);margin-top:-4px}
+.xrow{border:1px solid var(--ln);border-radius:14px;padding:10px;margin-bottom:8px}.xh{display:flex;gap:8px;margin-bottom:8px}.xh button{width:38px;flex:none;border-radius:10px;border:1px solid var(--ln);display:grid;place-items:center;color:var(--mut)}
+.xg{display:grid;grid-template-columns:1fr 1fr 1fr 1.4fr;gap:8px}.xg label{display:block;font-size:11px;color:var(--mut);margin-bottom:3px}.xg input,.xg select{width:100%;padding:7px 8px;font-size:15px;border-radius:9px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head>
 <body>
@@ -118,16 +129,16 @@ input[type=range]{touch-action:pan-y}
 <div id="sheet"></div><div id="log"></div>
 <input type="file" id="imp" accept=".json" hidden>
 <script>
-const VER='1.3.0',REL='22 Oct 2026';
+const VER='1.4.0',REL='22 Oct 2026';
 const CHANGES=[
-['1.3.0','Swipe between pages. Tap the activity calendar for 6-week history. Clearer completed sets. New injury icon.'],
-['1.2.0','Dashboard with weekly calendar, week streaks and history. Gentle set animation. One-tap light/dark button.'],
-['1.1.0','Timed sets, reps per set, weights, injury start dates, compact injury cards.']];
+['1.4.0','Injury history and linked exercises open when you tap an injury. Add exercises while creating an injury. Swiping loops through pages. New hand icon.'],
+['1.3.0','Swipe between pages. Tap the activity calendar for 6-week history. Clearer completed sets.'],
+['1.2.0','Dashboard with weekly calendar, week streaks and history. Gentle set animation. One-tap light/dark button.']];
 const $=s=>document.querySelector(s),KEY='rehab-data-v1';
 const P={plus:'<path d="M12 5v14M5 12h14"/>',minus:'<path d="M5 12h14"/>',l:'<path d="M15 18l-6-6 6-6"/>',r:'<path d="M9 18l6-6-6-6"/>',dn:'<path d="M6 9l6 6 6-6"/>',
 check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',play:'<path d="M8 5.5v13l11-6.5z"/>',stop:'<rect x="6.5" y="6.5" width="11" height="11" rx="2"/>',
 dash:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',flame:'<path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3.5 2.2-4.5.3 1.3 1 2 1.8 2.3C11 8 10.8 5.5 12 3z"/>',
-inj:'<path d="M2 9h6l1.5 2L8 13l1.5 2H2"/><path d="M11 9h7.5a3 3 0 0 1 0 6h-6l-1.5-2 1.5-2z"/><path d="M15.5 12H20"/>',
+inj:'<path d="M2 10h6.5l1.5 2-1.5 2 1.5 2H2"/><path d="M9.4 9.9l6.5-3.7a3 3 0 0 1 3 5.2l-5.2 3-2.3-1 .3-2.5z"/><path d="M15.1 8.9l3.6-2.1M16.1 10.6l3.6-2"/>',
 ex:'<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',
 sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
 moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>'};
@@ -146,7 +157,7 @@ const dl=(k,o)=>new Date(k+'T12:00').toLocaleDateString('en',o);
 const wl=k=>{const a=dl(k,{day:'numeric',month:'short'}),b=dl(ds(k,6),{day:'numeric',month:'short'});return a.split(' ')[1]==b.split(' ')[1]?a.split(' ')[0]+'–'+b:a+' – '+b};
 const T=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
 const TODAY=iso(new Date()),NOW=mon(TODAY);
-let histOpen=false,pop=null,tab='today',cur=TODAY,wk=NOW,open=null,timer=null,ft='reps',nOpen={};
+let iopen=null,histOpen=false,pop=null,tab='today',cur=TODAY,wk=NOW,open=null,timer=null,ft='reps',nOpen={};
 const lg=(e,d)=>{const l=(S.logs[e.id]=S.logs[e.id]||{});const x=l[d]=l[d]||{s:[]};while(x.s.length<e.sets)x.s.push({v:null,d:false});return x};
 const rd=(e,d)=>(S.logs[e.id]||{})[d];
 const full=(e,d)=>{const x=rd(e,d);return !!x&&x.s.slice(0,e.sets).filter(s=>s.d).length>=e.sets};
@@ -206,16 +217,23 @@ function spark(id){
  return `<svg viewBox="0 0 ${W} ${H}"><polyline points="${pts}" fill="none" stroke="var(--ac)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 }
 function since(s){if(!s)return 'No start date';const d=Math.max(0,Math.floor((new Date(TODAY+'T12:00')-new Date(s+'T12:00'))/864e5));return 'Since '+dl(s,{day:'numeric',month:'short'})+' · '+(d<14?d+' d':Math.floor(d/7)+' wks')}
+function ipanel(i){
+ const xs=S.ex.filter(e=>e.inj==i.id),ks=Object.keys(S.checks[i.id]||{}).sort().reverse().slice(0,12);
+ return `<div class="ip"><div class="grp">Exercises</div>`+(xs.length?xs.map(e=>`<button class="xl" data-act="editEx" data-id="${e.id}"><span>${esc(e.name)}</span><small>${sub(e)} · ${e.per}×/wk</small></button>`).join(''):`<div class="mut">No exercises linked yet.</div>`)+
+ `<button class="lk" data-act="newExI" data-id="${i.id}">+ Add exercise</button><div class="grp">History</div>`+
+ (ks.length?`<div class="hr hh"><span></span><span>Pain</span><span>Recovery</span></div>`+ks.map(k=>{const c=S.checks[i.id][k];return `<div class="hr"><span>${wl(k)}</span><span class="mb pb"><b>${c.pain}</b><s style="--w:${c.pain*10}%"></s></span><span class="mb"><b>${c.rec}</b><s style="--w:${c.rec*10}%"></s></span>${c.note?`<small class="hn">${esc(c.note)}</small>`:''}</div>`}).join(''):`<div class="mut">No check-ins yet.</div>`)+
+ `<button class="lk" data-act="editInj" data-id="${i.id}">Edit injury</button></div>`;
+}
 function vInj(){
- let h=`<div class="nav"><button data-act="wk" data-id="-1" aria-label="Previous week">${ic('l')}</button><b>Week of ${wl(wk)}</b><button data-act="wk" data-id="1" ${wk>=NOW?'disabled':''} aria-label="Next week">${ic('r')}</button></div>`;
+ let h='';
  if(!S.inj.length)h+=`<div class="empty"><p>Add an injury to track pain and recovery each week.</p></div>`;
  S.inj.forEach(i=>{
   const c=chk(i.id),ks=Object.keys(S.checks[i.id]||{}).filter(k=>k<wk).sort(),pv=ks.length?S.checks[i.id][ks.pop()]:null;
-  const p=c?c.pain:(pv?pv.pain:0),r=c?c.rec:(pv?pv.rec:0);
+  const p=c?c.pain:(pv?pv.pain:0),r=c?c.rec:(pv?pv.rec:0),o=iopen==i.id;
   let d='Not logged this week';if(c){d='Logged';if(pv){const x=c.pain-pv.pain;d=x==0?'Pain unchanged':`<span class="${x<0?'up':'dn'}">Pain ${x<0?'down':'up'} ${Math.abs(x)}</span> vs last check-in`}}
-  h+=`<div class="ic"><div class="ih"><button class="info" data-act="editInj" data-id="${i.id}"><b>${esc(i.name)}</b><small>${since(i.start)}</small></button><span class="sp" id="s${i.id}">${spark(i.id)}</span><select data-act="status" data-id="${i.id}" aria-label="Status">${STAT.map(s=>`<option ${i.status==s?'selected':''}>${s}</option>`).join('')}</select></div>
+  h+=`<div class="ic ${o?'open':''}"><div class="ih"><button class="info" data-act="itg" data-id="${i.id}"><b>${esc(i.name)}</b><small>${since(i.start)}</small></button><span class="sp" id="s${i.id}">${spark(i.id)}</span><select data-act="status" data-id="${i.id}" aria-label="Status">${STAT.map(s=>`<option ${i.status==s?'selected':''}>${s}</option>`).join('')}</select><button class="chev" data-act="itg" data-id="${i.id}" aria-label="Show details">${ic('dn')}</button></div>
   <div class="sg ${c?'':'dim'}" id="c${i.id}"><div class="sl"><label>Pain <span id="p${i.id}">${p}/10</span></label><input type="range" min="0" max="10" value="${p}" data-act="pain" data-id="${i.id}"></div><div class="sl"><label>Recovery <span id="r${i.id}">${r}/10</span></label><input type="range" min="0" max="10" value="${r}" data-act="rec" data-id="${i.id}"></div></div>
-  <div class="ft"><span>${d}</span>${c&&c.note||nOpen[i.id]?`<input type="text" placeholder="Note" value="${esc(c?.note)}" data-act="note" data-id="${i.id}">`:`<button data-act="nt" data-id="${i.id}">+ Note</button>`}</div></div>`});
+  <div class="ft"><span>${d}</span>${c&&c.note||nOpen[i.id]?`<input type="text" placeholder="Note" value="${esc(c?.note)}" data-act="note" data-id="${i.id}">`:`<button data-act="nt" data-id="${i.id}">+ Note</button>`}</div>${o?ipanel(i):''}</div>`});
  return h+`<button class="add" data-act="newInj">${ic('plus')} Add injury</button>`;
 }
 function vEx(){
@@ -226,8 +244,8 @@ function vEx(){
 }
 function sheet(h){const s=$('#sheet');s.innerHTML=`<div class="bk" data-act="close"></div><div class="pan">${h}</div>`;s.classList.add('on')}
 function close(){$('#sheet').classList.remove('on');$('#log').classList.remove('on')}
-function exForm(id){
- const e=S.ex.find(x=>x.id==id)||{name:'',type:'reps',sets:3,reps:10,per:3,inj:S.inj[0]?.id||'',weight:null,notes:''};ft=e.type;
+function exForm(id,pre){
+ const e=S.ex.find(x=>x.id==id)||{name:'',type:'reps',sets:3,reps:10,per:3,inj:pre||S.inj[0]?.id||'',weight:null,notes:''};ft=e.type;
  sheet(`<h2>${id?'Edit exercise':'New exercise'}</h2><div class="fl"><label>Name</label><input type="text" id="f-n" value="${esc(e.name)}" placeholder="e.g. Calf raises"></div>
  <div class="seg"><button id="ty-reps" class="${ft=='reps'?'on':''}" data-act="ftype" data-id="reps">Reps</button><button id="ty-time" class="${ft=='time'?'on':''}" data-act="ftype" data-id="time">Time</button></div>
  <div class="tri"><div class="fl"><label>Sets</label><input type="number" id="f-s" min="1" inputmode="numeric" value="${e.sets}"></div><div class="fl"><label id="f-rl">${ft=='time'?'Seconds':'Reps'}</label><input type="number" id="f-r" min="1" inputmode="numeric" value="${e.reps}"></div><div class="fl"><label>Times / week</label><input type="number" id="f-p" min="1" max="21" inputmode="numeric" value="${e.per}"></div></div>
@@ -235,10 +253,12 @@ function exForm(id){
  <div class="fl"><label>Notes</label><textarea id="f-t" rows="2" placeholder="Tempo, resistance band, cues">${esc(e.notes)}</textarea></div>
  <div class="acts">${id?`<button class="btn d" data-act="delEx" data-id="${id}">Delete</button>`:''}<button class="btn" data-act="saveEx" data-id="${id||''}">Save</button></div>`);
 }
+const XR=()=>`<div class="xrow"><div class="xh"><input type="text" class="xn" placeholder="Exercise name"><button data-act="rmrow" aria-label="Remove exercise">${ic('minus')}</button></div><div class="xg"><div><label>Sets</label><input type="number" class="xs" min="1" inputmode="numeric" value="3"></div><div><label>Reps / sec</label><input type="number" class="xr" min="1" inputmode="numeric" value="10"></div><div><label>Per week</label><input type="number" class="xp" min="1" max="21" inputmode="numeric" value="3"></div><div><label>Type</label><select class="xt"><option value="reps">Reps</option><option value="time">Time</option></select></div></div></div>`;
 function injForm(id){
  const i=S.inj.find(x=>x.id==id)||{name:'',start:''};
  sheet(`<h2>${id?'Edit injury':'New injury'}</h2><div class="fl"><label>Name</label><input type="text" id="f-n" value="${esc(i.name)}" placeholder="e.g. Left wrist fracture"></div>
  <div class="fl"><label>Start date</label><input type="date" id="f-d" max="${TODAY}" value="${i.start||''}"></div>
+ ${id?'':`<div class="grp" style="margin:16px 2px 8px">Exercises (optional)</div><div id="xr"></div><button class="add" data-act="addrow" style="margin-bottom:4px">${ic('plus')} Add exercise</button>`}
  <div class="acts">${id?`<button class="btn d" data-act="delInj" data-id="${id}">Delete</button>`:''}<button class="btn" data-act="saveInj" data-id="${id||''}">Save</button></div>`);
 }
 function setChk(id,k,v){const c=(S.checks[id]=S.checks[id]||{});const o=c[wk]||{pain:+$('#c'+id+' input[data-act=pain]').value,rec:+$('#c'+id+' input[data-act=rec]').value,note:''};o[k]=v;c[wk]=o;save();$('#c'+id).classList.remove('dim')}
@@ -266,6 +286,10 @@ document.addEventListener('click',e=>{
  if(a=='stop'){const el=Math.max(1,Math.round((Date.now()-timer.t)/1000)),s=lg(S.ex.find(x=>x.id==timer.id),timer.d).s[timer.i];const be=dayAct(timer.d);s.v=el;s.d=true;const q=timer;timer=null;save();pop={id:q.id,i:q.i,day:!be&&dayAct(q.d)?q.d:null};return render()}
  if(a=='wu'||a=='wd'){ex.weight=Math.max(0,+((ex.weight||0)+(a=='wu'?2.5:-2.5)).toFixed(1))||null;ex.wh=ex.wh.filter(h=>h.d!=cur);ex.wh.push({d:cur,w:ex.weight});save();return render()}
  if(a=='nt'){nOpen[id]=1;return render()}
+ if(a=='itg'){iopen=iopen==id?null:id;return render()}
+ if(a=='newExI')return exForm(null,id);
+ if(a=='addrow'){$('#xr').insertAdjacentHTML('beforeend',XR());const n=document.querySelectorAll('#xr .xn');n[n.length-1].focus();return}
+ if(a=='rmrow'){b.closest('.xrow').remove();return}
  if(a=='newEx')return exForm();if(a=='editEx')return exForm(id);
  if(a=='newInj')return injForm();if(a=='editInj')return injForm(id);
  if(a=='ftype'){ft=id;$('#ty-reps').classList.toggle('on',id=='reps');$('#ty-time').classList.toggle('on',id=='time');$('#f-rl').textContent=id=='time'?'Seconds':'Reps';return}
@@ -276,7 +300,9 @@ document.addEventListener('click',e=>{
   old?S.ex[S.ex.findIndex(x=>x.id==id)]=o:S.ex.push(o);save();close();return render()}
  if(a=='delEx'){S.ex=S.ex.filter(x=>x.id!=id);delete S.logs[id];save();close();return render()}
  if(a=='saveInj'){const n=$('#f-n').value.trim();if(!n){$('#f-n').focus();return}
-  const st=$('#f-d').value;if(id){const j=S.inj.find(x=>x.id==id);j.name=n;j.start=st}else S.inj.push({id:uid(),name:n,status:'Active',start:st});save();close();return render()}
+  const st=$('#f-d').value;if(id){const j=S.inj.find(x=>x.id==id);j.name=n;j.start=st}else{const nid=uid();S.inj.push({id:nid,name:n,status:'Active',start:st});iopen=nid;
+   document.querySelectorAll('#xr .xrow').forEach(r=>{const en=r.querySelector('.xn').value.trim();if(!en)return;S.ex.push({id:uid(),name:en,type:r.querySelector('.xt').value,sets:Math.max(1,+r.querySelector('.xs').value||1),reps:Math.max(1,+r.querySelector('.xr').value||1),per:Math.min(21,Math.max(1,+r.querySelector('.xp').value||1)),inj:nid,weight:null,wh:[],notes:''})})}
+  save();close();return render()}
  if(a=='delInj'){S.inj=S.inj.filter(x=>x.id!=id);delete S.checks[id];S.ex.forEach(x=>{if(x.inj==id)x.inj=''});save();close();return render()}
  if(a=='tgl'){const n=document.documentElement.dataset.theme=='dark'?'light':'dark';theme(n);$('#thm').innerHTML=ic(n=='dark'?'moon':'sun');return}
  if(a=='exp'){const l=document.createElement('a');l.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));l.download='reform-backup-'+iso(new Date())+'.json';l.click()}
@@ -300,7 +326,7 @@ function swEnd(cancel){
  ap.style.transition=nb.style.transition=`transform ${dur}ms cubic-bezier(.22,.8,.3,1)`;
  if(go){ap.style.transform=`translateX(${-dir*W}px)`;nb.style.transform='translateX(0)'}
  else{ap.style.transform='translateX(0)';if(g.has)nb.style.transform=`translateX(${dir*W}px)`}
- setTimeout(()=>{ap.style.cssText='';nb.style.cssText='';nb.innerHTML='';if(go){tab=ORDER[ORDER.indexOf(tab)+dir];scrollTo(0,0);render()}g=null},dur);
+ setTimeout(()=>{ap.style.cssText='';nb.style.cssText='';nb.innerHTML='';if(go){tab=ORDER[(ORDER.indexOf(tab)+dir+ORDER.length)%ORDER.length];scrollTo(0,0);render()}g=null},dur);
 }
 pg.addEventListener('touchstart',e=>{
  if(g&&g.busy)return;
@@ -312,7 +338,7 @@ pg.addEventListener('touchmove',e=>{
  if(!g.lock){if(Math.abs(dx)<8&&Math.abs(dy)<8)return;g.lock=Math.abs(dx)>Math.abs(dy)*1.3?'x':'y'}
  if(g.lock!='x')return;
  g.dx=dx;const dir=dx<0?1:-1,W=pg.clientWidth;
- if(dir!=g.dir){g.dir=dir;const j=ORDER.indexOf(tab)+dir;g.has=j>=0&&j<ORDER.length;
+ if(dir!=g.dir){g.dir=dir;const j=(ORDER.indexOf(tab)+dir+ORDER.length)%ORDER.length;g.has=true;
   if(g.has){nb.innerHTML=pageHtml(ORDER[j]);nb.style.cssText=`visibility:visible;top:${Math.max(0,-pg.getBoundingClientRect().top)}px`}else{nb.innerHTML='';nb.style.cssText=''}}
  ap.style.transform=`translateX(${g.has?dx:dx*.25}px)`;
  if(g.has)nb.style.transform=`translateX(${dx+dir*W}px)`;
