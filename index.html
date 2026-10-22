@@ -121,6 +121,16 @@ input[type=range]{touch-action:pan-y}
 .hn{grid-column:1/-1;color:var(--mut);margin-top:-4px}
 .xrow{border:1px solid var(--ln);border-radius:14px;padding:10px;margin-bottom:8px}.xh{display:flex;gap:8px;margin-bottom:8px}.xh button{width:38px;flex:none;border-radius:10px;border:1px solid var(--ln);display:grid;place-items:center;color:var(--mut)}
 .xg{display:grid;grid-template-columns:1fr 1fr 1fr 1.4fr;gap:8px}.xg label{display:block;font-size:11px;color:var(--mut);margin-bottom:3px}.xg input,.xg select{width:100%;padding:7px 8px;font-size:15px;border-radius:9px}
+
+.set .n{width:20px;text-align:center}.set .wi{width:66px}.set .ri{width:70px}.set .x{color:var(--mut);width:8px;text-align:center}
+.ov{margin-top:6px;padding-top:10px;border-top:1px dashed var(--ln)}.ovh{display:flex;align-items:baseline;gap:8px;font-size:13px;color:var(--mut);margin-bottom:2px}.ovh b{color:var(--tx);font-size:15px}.ovh small{margin-left:auto;font-size:12px}
+.mb b{width:30px}
+.ex{position:relative}
+.fx{position:absolute;right:46px;top:-10px;width:26px;height:26px;pointer-events:none;z-index:2}
+.fx .pi{display:block;opacity:0;animation:hn 1.4s ease-out forwards}.fx svg{width:26px;height:26px;stroke:var(--ac)}
+.fx i{position:absolute;left:10px;top:10px;width:5px;height:5px;border-radius:50%;background:var(--c);opacity:0;animation:bst .95s .1s cubic-bezier(.2,.7,.3,1) forwards}.fx i.r{width:3px;height:7px;border-radius:1.5px}
+@keyframes hn{0%{opacity:0;transform:scale(.4) rotate(-20deg)}20%{opacity:1;transform:scale(1.15) rotate(8deg)}35%{transform:scale(1) rotate(0)}75%{opacity:1}100%{opacity:0;transform:translateY(-6px)}}
+@keyframes bst{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(.5)}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head>
 <body>
@@ -129,22 +139,22 @@ input[type=range]{touch-action:pan-y}
 <div id="sheet"></div><div id="log"></div>
 <input type="file" id="imp" accept=".json" hidden>
 <script>
-const VER='1.4.0',REL='22 Oct 2026';
+const VER='1.5.0',REL='22 Oct 2026';
 const CHANGES=[
-['1.4.0','Injury history and linked exercises open when you tap an injury. Add exercises while creating an injury. Swiping loops through pages. New hand icon.'],
-['1.3.0','Swipe between pages. Tap the activity calendar for 6-week history. Clearer completed sets.'],
-['1.2.0','Dashboard with weekly calendar, week streaks and history. Gentle set animation. One-tap light/dark button.']];
+['1.5.0','Progress slider on each exercise (reps, duration or weight). Weight box beside reps for every set. Pain and Function (% of normal) check-ins. Party flourish when an exercise is finished.'],
+['1.4.0','Injury history and linked exercises open when you tap an injury. Add exercises while creating an injury. Swiping loops through pages.'],
+['1.3.0','Swipe between pages. Tap the activity calendar for 6-week history. Clearer completed sets.']];
 const $=s=>document.querySelector(s),KEY='rehab-data-v1';
 const P={plus:'<path d="M12 5v14M5 12h14"/>',minus:'<path d="M5 12h14"/>',l:'<path d="M15 18l-6-6 6-6"/>',r:'<path d="M9 18l6-6-6-6"/>',dn:'<path d="M6 9l6 6 6-6"/>',
 check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',play:'<path d="M8 5.5v13l11-6.5z"/>',stop:'<rect x="6.5" y="6.5" width="11" height="11" rx="2"/>',
 dash:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',flame:'<path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3.5 2.2-4.5.3 1.3 1 2 1.8 2.3C11 8 10.8 5.5 12 3z"/>',
 inj:'<path d="M2 10h6.5l1.5 2-1.5 2 1.5 2H2"/><path d="M9.4 9.9l6.5-3.7a3 3 0 0 1 3 5.2l-5.2 3-2.3-1 .3-2.5z"/><path d="M15.1 8.9l3.6-2.1M16.1 10.6l3.6-2"/>',
 ex:'<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',
-sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+party:'<path d="M4 20l4.2-10.8 6.6 6.6z"/><path d="M13.5 6.5l1-1.5M16.5 10l2-.5M17 6.5h.01M19.5 13h.01M12 3.5h.01"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
 moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>'};
 const ic=n=>`<svg class="i" viewBox="0 0 24 24">${P[n]}</svg>`;
 let S=JSON.parse(localStorage.getItem(KEY)||'null')||{ex:[],inj:[],logs:{},checks:{}};
-function mig(){S.ex.forEach(e=>{e.type=e.type||'reps';if(e.weight===undefined)e.weight=null;e.wh=e.wh||[]});S.inj.forEach(i=>i.start=i.start||'');
+function mig(){S.ex.forEach(e=>{e.type=e.type||'reps';if(e.weight===undefined)e.weight=null;e.wh=e.wh||[];e.prog=e.prog||'main';e.b=e.b||{}});S.inj.forEach(i=>i.start=i.start||'');
  Object.keys(S.logs).forEach(id=>Object.keys(S.logs[id]).forEach(k=>{if(typeof S.logs[id][k]!='object')delete S.logs[id][k]}))}
 mig();
 const save=()=>localStorage.setItem(KEY,JSON.stringify(S));
@@ -157,13 +167,21 @@ const dl=(k,o)=>new Date(k+'T12:00').toLocaleDateString('en',o);
 const wl=k=>{const a=dl(k,{day:'numeric',month:'short'}),b=dl(ds(k,6),{day:'numeric',month:'short'});return a.split(' ')[1]==b.split(' ')[1]?a.split(' ')[0]+'–'+b:a+' – '+b};
 const T=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
 const TODAY=iso(new Date()),NOW=mon(TODAY);
-let iopen=null,histOpen=false,pop=null,tab='today',cur=TODAY,wk=NOW,open=null,timer=null,ft='reps',nOpen={};
+let fp='main',iopen=null,histOpen=false,pop=null,tab='today',cur=TODAY,wk=NOW,open=null,timer=null,ft='reps',nOpen={};
 const lg=(e,d)=>{const l=(S.logs[e.id]=S.logs[e.id]||{});const x=l[d]=l[d]||{s:[]};while(x.s.length<e.sets)x.s.push({v:null,d:false});return x};
 const rd=(e,d)=>(S.logs[e.id]||{})[d];
 const full=(e,d)=>{const x=rd(e,d);return !!x&&x.s.slice(0,e.sets).filter(s=>s.d).length>=e.sets};
 const wc=(e,w)=>{let n=0;for(let i=0;i<7;i++)if(full(e,ds(w,i)))n++;return n};
 const chk=(i,k=wk)=>(S.checks[i]||{})[k];
 const STAT=['Active','Improving','Recovered'];
+const ovI=e=>{if(!e.b)e.b={};const w=e.prog=='weight',k=w?'weight':'reps',v=w?(e.weight||0):e.reps;if(e.b[k]==null)e.b[k]=v;
+ if(w)return{k,v,min:0,max:Math.max(40,Math.ceil(v*1.6/2.5)*2.5),st:2.5,f:x=>x?x+' kg':'Bodyweight'};
+ if(e.type=='time')return{k,v,min:5,max:Math.max(120,Math.ceil(v*1.6/5)*5),st:5,f:x=>x+' sec'};
+ return{k,v,min:1,max:Math.max(30,Math.ceil(v*1.6)),st:1,f:x=>x+' reps'}};
+const ovD=(e,o)=>{const d=+(o.v-e.b[o.k]).toFixed(1);return d?(d>0?'↑ +':'↓ ')+d+' since start':'Starting level'};
+const OV=e=>{const o=ovI(e);return `<div class="ov"><div class="ovh"><span>Target</span><b id="ovv${e.id}">${o.f(o.v)}</b><small id="ovd${e.id}">${ovD(e,o)}</small></div><input type="range" min="${o.min}" max="${o.max}" step="${o.st}" value="${o.v}" data-act="ov" data-id="${e.id}" aria-label="Adjust target"></div>`};
+const FXC=['#a98bff','#7a4de8','#f4a3c8','#ffc86b','#6fd3c0'];
+const FX=()=>`<span class="fx"><span class="pi">${ic('party')}</span>`+Array.from({length:10},(_,k)=>{const a=(k*36+(k%2?12:0)-90)*Math.PI/180,r=34+(k%3)*9;return `<i class="${k%3==0?'r':''}" style="--x:${(Math.cos(a)*r).toFixed(0)}px;--y:${(Math.sin(a)*r).toFixed(0)}px;--c:${FXC[k%5]}"></i>`}).join('')+'</span>';
 const wtx=e=>e.weight?e.weight+' kg':'Bodyweight';
 const sub=e=>`${e.sets} × ${e.reps}${e.type=='time'?' sec':' reps'}${e.weight?' · '+e.weight+' kg':''}`;
 
@@ -206,9 +224,9 @@ function vToday(){
   let p='';
   if(o){const L=lg(e,cur);
    p=`<div class="pn">`+L.s.slice(0,e.sets).map((s,i)=>{const run=timer&&timer.id==e.id&&timer.i==i&&timer.d==cur;
-    return `<div class="set ${s.d?'dn':''}"><span class="n">Set ${i+1}</span><input type="number" inputmode="numeric" min="0" placeholder="${e.reps}" value="${s.v??''}" data-act="sv" data-id="${e.id}" data-i="${i}"><span class="u">${tm?'sec':'reps'}</span>${tm?`<button class="tb ${run?'on':''}" data-act="${run?'stop':'start'}" data-id="${e.id}" data-i="${i}" aria-label="${run?'Stop timer':'Start timer'}">${run?ic('stop')+'<span id="tm">0:00</span>':ic('play')}</button>`:''}<button class="tk ${s.d?'on':''} ${pop&&pop.id==e.id&&pop.i==i?'pop':''}" data-act="tick" data-id="${e.id}" data-i="${i}" aria-label="Done">${ic('check')}</button></div>`}).join('')+
-   `<div class="wt"><span>Weight</span><span class="st"><button data-act="wd" data-id="${e.id}" ${e.weight?'':'disabled style="opacity:.35"'} aria-label="Lower weight">${ic('minus')}</button><b>${wtx(e)}</b><button data-act="wu" data-id="${e.id}" aria-label="Raise weight">${ic('plus')}</button></span></div></div>`}
-  return `<div class="ex ${o?'open':''} ${full(e,cur)?'fin':''}"><button class="exh" data-act="tg" data-id="${e.id}"><span class="info"><b>${esc(e.name)}</b><small>${sub(e)}</small></span><span class="dots">${Array.from({length:e.sets},(_,i)=>`<i class="${x&&x.s[i]&&x.s[i].d?'d':''}"></i>`).join('')}</span><span class="cnt ${c>=e.per?'full':''}">${c}/${e.per}</span><span class="chev">${ic('dn')}</span></button>${p}</div>`}).join('')});
+    return `<div class="set ${s.d?'dn':''}"><span class="n">${i+1}</span><input type="number" class="wi" inputmode="decimal" step="0.5" min="0" placeholder="kg" value="${(s.w!=null?s.w:e.weight)??''}" data-act="sw" data-id="${e.id}" data-i="${i}" aria-label="Weight in kg"><span class="x">${tm?'':'×'}</span><input type="number" class="ri" inputmode="numeric" min="0" placeholder="${e.reps}" value="${s.v??''}" data-act="sv" data-id="${e.id}" data-i="${i}" aria-label="${tm?'Seconds':'Reps'}"><span class="u"></span>${tm?`<button class="tb ${run?'on':''}" data-act="${run?'stop':'start'}" data-id="${e.id}" data-i="${i}" aria-label="${run?'Stop timer':'Start timer'}">${run?ic('stop')+'<span id="tm">0:00</span>':ic('play')}</button>`:''}<button class="tk ${s.d?'on':''} ${pop&&pop.id==e.id&&pop.i==i?'pop':''}" data-act="tick" data-id="${e.id}" data-i="${i}" aria-label="Done">${ic('check')}</button></div>`}).join('')+
+   `${OV(e)}</div>`}
+  return `<div class="ex ${o?'open':''} ${full(e,cur)?'fin':''}"><button class="exh" data-act="tg" data-id="${e.id}"><span class="info"><b>${esc(e.name)}</b><small>${sub(e)}</small></span><span class="dots">${Array.from({length:e.sets},(_,i)=>`<i class="${x&&x.s[i]&&x.s[i].d?'d':''}"></i>`).join('')}</span><span class="cnt ${c>=e.per?'full':''}">${c}/${e.per}</span><span class="chev">${ic('dn')}</span></button>${p}${pop&&pop.fin==e.id?FX():''}</div>`}).join('')});
  return h;
 }
 function spark(id){
@@ -221,18 +239,18 @@ function ipanel(i){
  const xs=S.ex.filter(e=>e.inj==i.id),ks=Object.keys(S.checks[i.id]||{}).sort().reverse().slice(0,12);
  return `<div class="ip"><div class="grp">Exercises</div>`+(xs.length?xs.map(e=>`<button class="xl" data-act="editEx" data-id="${e.id}"><span>${esc(e.name)}</span><small>${sub(e)} · ${e.per}×/wk</small></button>`).join(''):`<div class="mut">No exercises linked yet.</div>`)+
  `<button class="lk" data-act="newExI" data-id="${i.id}">+ Add exercise</button><div class="grp">History</div>`+
- (ks.length?`<div class="hr hh"><span></span><span>Pain</span><span>Recovery</span></div>`+ks.map(k=>{const c=S.checks[i.id][k];return `<div class="hr"><span>${wl(k)}</span><span class="mb pb"><b>${c.pain}</b><s style="--w:${c.pain*10}%"></s></span><span class="mb"><b>${c.rec}</b><s style="--w:${c.rec*10}%"></s></span>${c.note?`<small class="hn">${esc(c.note)}</small>`:''}</div>`}).join(''):`<div class="mut">No check-ins yet.</div>`)+
+ (ks.length?`<div class="hr hh"><span></span><span>Pain</span><span>Function</span></div>`+ks.map(k=>{const c=S.checks[i.id][k];return `<div class="hr"><span>${wl(k)}</span><span class="mb pb"><b>${c.pain}</b><s style="--w:${c.pain*10}%"></s></span><span class="mb"><b>${c.rec*10}%</b><s style="--w:${c.rec*10}%"></s></span>${c.note?`<small class="hn">${esc(c.note)}</small>`:''}</div>`}).join(''):`<div class="mut">No check-ins yet.</div>`)+
  `<button class="lk" data-act="editInj" data-id="${i.id}">Edit injury</button></div>`;
 }
 function vInj(){
- let h='';
+ let h=S.inj.length?`<div class="mut" style="margin:0 2px 10px">Pain: 0 none to 10 worst. Function: how much of your normal use you have back.</div>`:'';
  if(!S.inj.length)h+=`<div class="empty"><p>Add an injury to track pain and recovery each week.</p></div>`;
  S.inj.forEach(i=>{
   const c=chk(i.id),ks=Object.keys(S.checks[i.id]||{}).filter(k=>k<wk).sort(),pv=ks.length?S.checks[i.id][ks.pop()]:null;
   const p=c?c.pain:(pv?pv.pain:0),r=c?c.rec:(pv?pv.rec:0),o=iopen==i.id;
   let d='Not logged this week';if(c){d='Logged';if(pv){const x=c.pain-pv.pain;d=x==0?'Pain unchanged':`<span class="${x<0?'up':'dn'}">Pain ${x<0?'down':'up'} ${Math.abs(x)}</span> vs last check-in`}}
   h+=`<div class="ic ${o?'open':''}"><div class="ih"><button class="info" data-act="itg" data-id="${i.id}"><b>${esc(i.name)}</b><small>${since(i.start)}</small></button><span class="sp" id="s${i.id}">${spark(i.id)}</span><select data-act="status" data-id="${i.id}" aria-label="Status">${STAT.map(s=>`<option ${i.status==s?'selected':''}>${s}</option>`).join('')}</select><button class="chev" data-act="itg" data-id="${i.id}" aria-label="Show details">${ic('dn')}</button></div>
-  <div class="sg ${c?'':'dim'}" id="c${i.id}"><div class="sl"><label>Pain <span id="p${i.id}">${p}/10</span></label><input type="range" min="0" max="10" value="${p}" data-act="pain" data-id="${i.id}"></div><div class="sl"><label>Recovery <span id="r${i.id}">${r}/10</span></label><input type="range" min="0" max="10" value="${r}" data-act="rec" data-id="${i.id}"></div></div>
+  <div class="sg ${c?'':'dim'}" id="c${i.id}"><div class="sl"><label>Pain <span id="p${i.id}">${p}/10</span></label><input type="range" min="0" max="10" value="${p}" data-act="pain" data-id="${i.id}"></div><div class="sl"><label>Function <span id="r${i.id}">${r*10}%</span></label><input type="range" min="0" max="10" value="${r}" data-act="rec" data-id="${i.id}"></div></div>
   <div class="ft"><span>${d}</span>${c&&c.note||nOpen[i.id]?`<input type="text" placeholder="Note" value="${esc(c?.note)}" data-act="note" data-id="${i.id}">`:`<button data-act="nt" data-id="${i.id}">+ Note</button>`}</div>${o?ipanel(i):''}</div>`});
  return h+`<button class="add" data-act="newInj">${ic('plus')} Add injury</button>`;
 }
@@ -245,9 +263,10 @@ function vEx(){
 function sheet(h){const s=$('#sheet');s.innerHTML=`<div class="bk" data-act="close"></div><div class="pan">${h}</div>`;s.classList.add('on')}
 function close(){$('#sheet').classList.remove('on');$('#log').classList.remove('on')}
 function exForm(id,pre){
- const e=S.ex.find(x=>x.id==id)||{name:'',type:'reps',sets:3,reps:10,per:3,inj:pre||S.inj[0]?.id||'',weight:null,notes:''};ft=e.type;
+ const e=S.ex.find(x=>x.id==id)||{name:'',type:'reps',sets:3,reps:10,per:3,inj:pre||S.inj[0]?.id||'',weight:null,notes:''};ft=e.type;fp=e.prog||'main';
  sheet(`<h2>${id?'Edit exercise':'New exercise'}</h2><div class="fl"><label>Name</label><input type="text" id="f-n" value="${esc(e.name)}" placeholder="e.g. Calf raises"></div>
  <div class="seg"><button id="ty-reps" class="${ft=='reps'?'on':''}" data-act="ftype" data-id="reps">Reps</button><button id="ty-time" class="${ft=='time'?'on':''}" data-act="ftype" data-id="time">Time</button></div>
+ <div class="fl"><label>Progress by</label><div class="seg" style="margin:0"><button id="pr-main" class="${fp=='main'?'on':''}" data-act="fprog" data-id="main">${ft=='time'?'Duration':'Reps'}</button><button id="pr-wt" class="${fp=='weight'?'on':''}" data-act="fprog" data-id="weight">Weight</button></div></div>
  <div class="tri"><div class="fl"><label>Sets</label><input type="number" id="f-s" min="1" inputmode="numeric" value="${e.sets}"></div><div class="fl"><label id="f-rl">${ft=='time'?'Seconds':'Reps'}</label><input type="number" id="f-r" min="1" inputmode="numeric" value="${e.reps}"></div><div class="fl"><label>Times / week</label><input type="number" id="f-p" min="1" max="21" inputmode="numeric" value="${e.per}"></div></div>
  <div class="tri" style="grid-template-columns:1fr 1.4fr"><div class="fl"><label>Weight (kg)</label><input type="number" id="f-w" min="0" step="0.5" inputmode="decimal" placeholder="None" value="${e.weight??''}"></div><div class="fl"><label>Injury</label><select id="f-i" style="width:100%;padding:9px 11px;font-size:16px"><option value="">None</option>${S.inj.map(i=>`<option value="${i.id}" ${e.inj==i.id?'selected':''}>${esc(i.name)}</option>`).join('')}</select></div></div>
  <div class="fl"><label>Notes</label><textarea id="f-t" rows="2" placeholder="Tempo, resistance band, cues">${esc(e.notes)}</textarea></div>
@@ -281,9 +300,9 @@ document.addEventListener('click',e=>{
  if(a=='wkn'){let n=ds(cur,7*+id);if(n>TODAY)n=TODAY;if(mon(n)<=NOW){cur=n;open=null;render()}return}
  if(a=='wk'){const n=ds(wk,7*+id);if(n<=NOW){wk=n;render()}return}
  if(a=='tg'){open=open==id?null:id;return render()}
- if(a=='tick'){const be=dayAct(cur),L=lg(ex,cur),s=L.s[i];s.d=!s.d;if(s.d&&(s.v==null||s.v===''))s.v=ex.reps;L.w=ex.weight;save();if(s.d)pop={id,i,day:!be&&dayAct(cur)?cur:null};return render()}
+ if(a=='tick'){const be=dayAct(cur),bf=full(ex,cur),L=lg(ex,cur),s=L.s[i];s.d=!s.d;if(s.d){if(s.v==null||s.v==='')s.v=ex.reps;if(s.w==null)s.w=ex.weight}else s.w=null;save();if(s.d)pop={id,i,day:!be&&dayAct(cur)?cur:null,fin:!bf&&full(ex,cur)?id:null};return render()}
  if(a=='start'){if(!timer){timer={id,i,d:cur,t:Date.now()};render()}return}
- if(a=='stop'){const el=Math.max(1,Math.round((Date.now()-timer.t)/1000)),s=lg(S.ex.find(x=>x.id==timer.id),timer.d).s[timer.i];const be=dayAct(timer.d);s.v=el;s.d=true;const q=timer;timer=null;save();pop={id:q.id,i:q.i,day:!be&&dayAct(q.d)?q.d:null};return render()}
+ if(a=='stop'){const e2=S.ex.find(x=>x.id==timer.id),el=Math.max(1,Math.round((Date.now()-timer.t)/1000)),s=lg(e2,timer.d).s[timer.i];const be=dayAct(timer.d),bf=full(e2,timer.d);s.v=el;s.d=true;if(s.w==null)s.w=e2.weight;const q=timer;timer=null;save();pop={id:q.id,i:q.i,day:!be&&dayAct(q.d)?q.d:null,fin:!bf&&full(e2,q.d)?q.id:null};return render()}
  if(a=='wu'||a=='wd'){ex.weight=Math.max(0,+((ex.weight||0)+(a=='wu'?2.5:-2.5)).toFixed(1))||null;ex.wh=ex.wh.filter(h=>h.d!=cur);ex.wh.push({d:cur,w:ex.weight});save();return render()}
  if(a=='nt'){nOpen[id]=1;return render()}
  if(a=='itg'){iopen=iopen==id?null:id;return render()}
@@ -292,16 +311,17 @@ document.addEventListener('click',e=>{
  if(a=='rmrow'){b.closest('.xrow').remove();return}
  if(a=='newEx')return exForm();if(a=='editEx')return exForm(id);
  if(a=='newInj')return injForm();if(a=='editInj')return injForm(id);
- if(a=='ftype'){ft=id;$('#ty-reps').classList.toggle('on',id=='reps');$('#ty-time').classList.toggle('on',id=='time');$('#f-rl').textContent=id=='time'?'Seconds':'Reps';return}
+ if(a=='ftype'){ft=id;$('#ty-reps').classList.toggle('on',id=='reps');$('#ty-time').classList.toggle('on',id=='time');$('#f-rl').textContent=id=='time'?'Seconds':'Reps';$('#pr-main').textContent=id=='time'?'Duration':'Reps';return}
+ if(a=='fprog'){fp=id;$('#pr-main').classList.toggle('on',id=='main');$('#pr-wt').classList.toggle('on',id=='weight');return}
  if(a=='saveEx'){const n=$('#f-n').value.trim();if(!n){$('#f-n').focus();return}
   const w=$('#f-w').value===''?null:Math.max(0,+$('#f-w').value)||null,old=ex;
-  const o={id:id||uid(),name:n,type:ft,sets:Math.max(1,+$('#f-s').value||1),reps:Math.max(1,+$('#f-r').value||1),per:Math.min(21,Math.max(1,+$('#f-p').value||1)),inj:$('#f-i').value,weight:w,wh:old?old.wh:[],notes:$('#f-t').value.trim()};
+  const o={id:id||uid(),name:n,type:ft,sets:Math.max(1,+$('#f-s').value||1),reps:Math.max(1,+$('#f-r').value||1),per:Math.min(21,Math.max(1,+$('#f-p').value||1)),inj:$('#f-i').value,weight:w,wh:old?old.wh:[],prog:fp,b:old?(old.b||{}):{},notes:$('#f-t').value.trim()};
   if(!old||old.weight!=w){o.wh=o.wh.filter(h=>h.d!=TODAY);o.wh.push({d:TODAY,w})}
   old?S.ex[S.ex.findIndex(x=>x.id==id)]=o:S.ex.push(o);save();close();return render()}
  if(a=='delEx'){S.ex=S.ex.filter(x=>x.id!=id);delete S.logs[id];save();close();return render()}
  if(a=='saveInj'){const n=$('#f-n').value.trim();if(!n){$('#f-n').focus();return}
   const st=$('#f-d').value;if(id){const j=S.inj.find(x=>x.id==id);j.name=n;j.start=st}else{const nid=uid();S.inj.push({id:nid,name:n,status:'Active',start:st});iopen=nid;
-   document.querySelectorAll('#xr .xrow').forEach(r=>{const en=r.querySelector('.xn').value.trim();if(!en)return;S.ex.push({id:uid(),name:en,type:r.querySelector('.xt').value,sets:Math.max(1,+r.querySelector('.xs').value||1),reps:Math.max(1,+r.querySelector('.xr').value||1),per:Math.min(21,Math.max(1,+r.querySelector('.xp').value||1)),inj:nid,weight:null,wh:[],notes:''})})}
+   document.querySelectorAll('#xr .xrow').forEach(r=>{const en=r.querySelector('.xn').value.trim();if(!en)return;S.ex.push({id:uid(),name:en,type:r.querySelector('.xt').value,sets:Math.max(1,+r.querySelector('.xs').value||1),reps:Math.max(1,+r.querySelector('.xr').value||1),per:Math.min(21,Math.max(1,+r.querySelector('.xp').value||1)),inj:nid,weight:null,wh:[],prog:'main',b:{},notes:''})})}
   save();close();return render()}
  if(a=='delInj'){S.inj=S.inj.filter(x=>x.id!=id);delete S.checks[id];S.ex.forEach(x=>{if(x.inj==id)x.inj=''});save();close();return render()}
  if(a=='tgl'){const n=document.documentElement.dataset.theme=='dark'?'light':'dark';theme(n);$('#thm').innerHTML=ic(n=='dark'?'moon':'sun');return}
@@ -309,11 +329,15 @@ document.addEventListener('click',e=>{
  if(a=='imp')$('#imp').click();
 });
 document.addEventListener('input',e=>{const b=e.target,a=b.dataset.act,id=b.dataset.id;
- if(a=='pain'||a=='rec'){$((a=='pain'?'#p':'#r')+id).textContent=b.value+'/10';setChk(id,a,+b.value)}});
+ if(a=='pain'||a=='rec'){$((a=='pain'?'#p':'#r')+id).textContent=a=='pain'?b.value+'/10':b.value*10+'%';setChk(id,a,+b.value)}
+ if(a=='ov'){const ex=S.ex.find(x=>x.id==id),o0=ovI(ex),v=+b.value;if(ex.prog=='weight')ex.weight=v||null;else ex.reps=v;const o=ovI(ex);$('#ovv'+id).textContent=o.f(o.v);$('#ovd'+id).textContent=ovD(ex,o)}});
 document.addEventListener('change',e=>{const b=e.target,a=b.dataset.act,id=b.dataset.id;
  if(a=='pain'||a=='rec'){$('#s'+id).innerHTML=spark(id)}
  if(a=='note'){setChk(id,'note',b.value)}
  if(a=='status'){S.inj.find(x=>x.id==id).status=b.value;save()}
+ if(a=='ov'){const ex=S.ex.find(x=>x.id==id);if(ex.prog=='weight'){ex.wh=ex.wh.filter(h=>h.d!=cur);ex.wh.push({d:cur,w:ex.weight});const x=rd(ex,cur);if(x)x.s.forEach(s=>{if(!s.d)s.w=null})}save();render()}
+ if(a=='sw'){const ex=S.ex.find(x=>x.id==id),L=lg(ex,cur),j=+b.dataset.i,v=b.value===''?null:(Math.max(0,+b.value)||null);L.s[j].w=v;ex.weight=v;L.s.forEach(s=>{if(!s.d)s.w=null});ex.wh=ex.wh.filter(h=>h.d!=cur);ex.wh.push({d:cur,w:v});save();
+  document.querySelectorAll('input.wi[data-id="'+id+'"]').forEach((inp,k)=>{if(!L.s[k].d&&k!=j)inp.value=v??''})}
  if(a=='sv'){const ex=S.ex.find(x=>x.id==id),s=lg(ex,cur).s[+b.dataset.i];s.v=b.value===''?null:Math.max(0,+b.value);save()}});
 $('#imp').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.ex||!d.inj)throw 0;S=d;mig();save();close();render()}catch{alert('That file is not a re:form backup.')}};r.readAsText(f);e.target.value=''});
 render();
