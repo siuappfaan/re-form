@@ -25,8 +25,8 @@ button{background:none;border:0;padding:0;cursor:pointer}
 .nav b{font-size:16px;font-weight:600}.nav button{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;color:var(--mut)}
 .nav button:active{background:var(--ln)}.nav button:disabled{opacity:.3}
 .sum{background:var(--card);border:1px solid var(--ln);border-radius:16px;padding:12px 14px;margin-bottom:12px}
-.sum div{display:flex;justify-content:space-between;font-size:13px;color:var(--mut);margin-bottom:8px}.sum strong{color:var(--tx);font-size:14px}
-.bar{height:6px;background:var(--ln);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac);border-radius:9px;transition:width .35s}
+.sum .top{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mut)}.sum strong{color:var(--tx);font-size:15px}.stk{display:flex;align-items:center;gap:6px;color:var(--ac)}.stk strong{font-size:22px;color:var(--ac)}.stk span{color:var(--mut)}
+.bar{position:relative;height:6px;background:var(--ln);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac);border-radius:9px;transition:width .35s}
 .ban{display:flex;align-items:center;justify-content:space-between;width:100%;text-align:left;background:var(--acs);color:var(--ac);border-radius:14px;padding:11px 14px;margin-bottom:12px;font-size:14px;font-weight:600}
 .grp{font-size:12px;color:var(--mut);margin:16px 4px 6px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
 .row,.card,.ex,.ic{background:var(--card);border:1px solid var(--ln);border-radius:16px;margin-bottom:8px}
@@ -75,6 +75,27 @@ input[type=range]{width:100%;accent-color:var(--ac);margin:0;height:26px}
 .seg{display:flex;background:var(--bg);border:1px solid var(--ln);border-radius:12px;padding:3px;margin:0 0 12px}.seg button{flex:1;display:flex;gap:6px;justify-content:center;align-items:center;padding:8px;border-radius:9px;font-size:14px;color:var(--mut)}.seg button.on{background:var(--card);color:var(--ac);box-shadow:0 1px 3px rgba(40,20,90,.15)}
 .cl{margin:0;padding-left:18px;color:var(--mut);font-size:14px}.cl li{margin:4px 0}
 .rel{font-size:13px;color:var(--mut);margin:-8px 0 8px}
+
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin:12px 0 12px}
+.dy{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;color:var(--mut)}
+.dy b{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:600;background:var(--bg);border:2px solid transparent;transition:background .25s,border-color .25s}
+.dy.a b{background:var(--ac);color:#fff}.dy.p b{background:var(--acs);color:var(--ac)}.dy.s b{border-color:var(--ac)}.dy.t>span{color:var(--ac);font-weight:700}.dy.f{opacity:.35}
+.bar s{position:absolute;left:75%;top:0;bottom:0;width:2px;background:var(--card)}
+.dh{font-size:17px;font-weight:600;margin:16px 4px 2px}
+.hm{padding:12px 14px;display:grid;grid-template-columns:40px repeat(7,1fr) 20px;gap:5px;align-items:center}
+.hm em{font-style:normal;font-size:10.5px;color:var(--mut);text-align:center}.hm i{height:18px;border-radius:5px;background:var(--ln)}
+.hm i.a{background:var(--ac)}.hm i.p{background:color-mix(in srgb,var(--ac) 35%,transparent)}.hm i.f{background:transparent;border:1px dashed var(--ln)}
+.hm .wl{font-size:11px;color:var(--mut)}.wm{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--ln);display:grid;place-items:center;color:#fff}.wm.m{background:var(--ac);border-color:var(--ac)}.wm svg{width:11px;height:11px;stroke-width:3}
+:root{--rg:rgba(122,77,232,.3)}[data-theme=dark]{--rg:rgba(169,139,255,.3)}
+@keyframes pop{0%{transform:scale(.88)}45%{transform:scale(1.06)}100%{transform:scale(1)}}
+@keyframes rg{0%{box-shadow:0 0 0 0 var(--rg)}100%{box-shadow:0 0 0 11px transparent}}
+@keyframes dr{from{stroke-dashoffset:24}to{stroke-dashoffset:0}}
+.tk.pop{animation:pop .4s ease-out,rg .6s ease-out}.tk.pop svg path{stroke-dasharray:24;animation:dr .3s ease-out}
+.dy.pop b{animation:pop .5s ease-out,rg .8s ease-out}
+.lh{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}.lh h2{margin:0;font-size:16px}
+#thm{width:36px;height:36px;border-radius:50%;border:1px solid var(--ln);display:grid;place-items:center;color:var(--ac)}
+.cv{font-size:13px;font-weight:600;margin-top:10px}.cv span{color:var(--mut);margin-left:8px;font-size:12px;font-weight:400}.cp{margin:2px 0 0;font-size:13px;color:var(--mut)}
+.btn.s{padding:8px 14px;font-size:14px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head>
 <body>
@@ -83,15 +104,15 @@ input[type=range]{width:100%;accent-color:var(--ac);margin:0;height:26px}
 <div id="sheet"></div><div id="log"></div>
 <input type="file" id="imp" accept=".json" hidden>
 <script>
-const VER='1.1.0',REL='22 Oct 2026';
+const VER='1.2.0',REL='22 Oct 2026';
 const CHANGES=[
-['1.1.0',['Reps or timed exercises, with a start/stop timer that records each set','Log reps or seconds for every set and tick sets off','Add weight to an exercise and step it up as you progress','Injury start dates and a compact injury list','New Today tab with a weekly check-in reminder','New wrist icon and purple look']],
-['1.0.2',['New minimal purple logo']],['1.0.1',['App renamed to re:form']],
-['1.0.0',['First release','Exercises with sets, reps and sessions per week','Injury status, weekly pain and recovery ratings with trend','Backup and restore in this popup']]];
+['1.2.0','Dashboard with weekly calendar, week streaks and history. Gentle set animation. One-tap light/dark button.'],
+['1.1.0','Timed sets, reps per set, weights, injury start dates, compact injury cards.'],
+['1.0.2','New logo.']];
 const $=s=>document.querySelector(s),KEY='rehab-data-v1';
 const P={plus:'<path d="M12 5v14M5 12h14"/>',minus:'<path d="M5 12h14"/>',l:'<path d="M15 18l-6-6 6-6"/>',r:'<path d="M9 18l6-6-6-6"/>',dn:'<path d="M6 9l6 6 6-6"/>',
 check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',play:'<path d="M8 5.5v13l11-6.5z"/>',stop:'<rect x="6.5" y="6.5" width="11" height="11" rx="2"/>',
-today:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+dash:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',flame:'<path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3.5 2.2-4.5.3 1.3 1 2 1.8 2.3C11 8 10.8 5.5 12 3z"/>',
 inj:'<path d="M8 12.5V6.4a1.2 1.2 0 0 1 2.4 0V10M10.4 9V4.6a1.2 1.2 0 0 1 2.4 0V10M12.8 6a1.2 1.2 0 0 1 2.4 0v5M15.2 8.4a1.2 1.2 0 0 1 2.4 0V13"/><path d="M7 15l2.3 1.8 2.2-1.8 2.3 1.8 2.2-1.8 2.3 1.8"/><path d="M8.5 18.5V22M17 18.5V22"/>',
 ex:'<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',
 sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
@@ -111,7 +132,7 @@ const dl=(k,o)=>new Date(k+'T12:00').toLocaleDateString('en',o);
 const wl=k=>{const a=dl(k,{day:'numeric',month:'short'}),b=dl(ds(k,6),{day:'numeric',month:'short'});return a.split(' ')[1]==b.split(' ')[1]?a.split(' ')[0]+'–'+b:a+' – '+b};
 const T=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
 const TODAY=iso(new Date()),NOW=mon(TODAY);
-let tab='today',cur=TODAY,wk=NOW,open=null,timer=null,ft='reps',nOpen={};
+let pop=null,tab='today',cur=TODAY,wk=NOW,open=null,timer=null,ft='reps',nOpen={};
 const lg=(e,d)=>{const l=(S.logs[e.id]=S.logs[e.id]||{});const x=l[d]=l[d]||{s:[]};while(x.s.length<e.sets)x.s.push({v:null,d:false});return x};
 const rd=(e,d)=>(S.logs[e.id]||{})[d];
 const full=(e,d)=>{const x=rd(e,d);return !!x&&x.s.slice(0,e.sets).filter(s=>s.d).length>=e.sets};
@@ -125,29 +146,36 @@ function theme(t){if(t)localStorage.setItem('rehab-theme',t);const v=localStorag
 theme();
 
 function render(){
- $('#tabs').innerHTML=[['today','Today','today'],['inj','Injuries','inj'],['ex','Exercises','ex']].map(t=>`<button class="${tab==t[0]?'on':''}" data-act="tab" data-id="${t[0]}">${ic(t[2])}${t[1]}</button>`).join('');
- $('#app').innerHTML=({today:vToday,inj:vInj,ex:vEx})[tab]()+`<button id="ver">v${VER}</button>`;
- bindVer();
+ $('#tabs').innerHTML=[['today','Dashboard','dash'],['inj','Injuries','inj'],['ex','Exercises','ex']].map(t=>`<button class="${tab==t[0]?'on':''}" data-act="tab" data-id="${t[0]}">${ic(t[2])}${t[1]}</button>`).join('');
+ $('#app').innerHTML=({today:vToday,inj:vInj,ex:vEx})[tab]()+(tab=='today'?`<button id="ver">v${VER}</button>`:'');
+ if(tab=='today')bindVer();
+ pop=null;
 }
+const LET=['M','T','W','T','F','S','S'];
+const dayAct=d=>S.ex.some(e=>full(e,d)),dayPart=d=>S.ex.some(e=>{const x=rd(e,d);return x&&x.s.some(s=>s.d)});
+const wst=w=>{let tot=0,done=0;S.ex.forEach(e=>{tot+=e.per;done+=Math.min(e.per,wc(e,w))});return{tot,done,met:tot>0&&done/tot>=.75}};
+function streak(){let w=NOW,n=0;if(!wst(w).met)w=ds(w,-7);while(n<260&&wst(w).met){n++;w=ds(w,-7)}return n}
 function vToday(){
- const w=mon(cur);let tot=0,done=0;S.ex.forEach(e=>{tot+=e.per;done+=Math.min(e.per,wc(e,w))});
- const dn=cur==TODAY?'Today':cur==ds(TODAY,-1)?'Yesterday':dl(cur,{weekday:'short',day:'numeric',month:'short'});
- let h=`<div class="nav"><button data-act="day" data-id="-1" aria-label="Previous day">${ic('l')}</button><b>${dn}</b><button data-act="day" data-id="1" ${cur>=TODAY?'disabled':''} aria-label="Next day">${ic('r')}</button></div>`;
- if(!S.ex.length){
-  return h+`<div class="empty"><p><b>Let's set up your rehab plan</b></p><p>${S.inj.length?'Now add the exercises you do for it.':'Start with the injury you are working on, then add its exercises.'}</p>${S.inj.length?'':'<button class="btn" data-act="newInj">Add injury</button>'}<button class="btn ${S.inj.length?'':'g'}" data-act="newEx">Add exercise</button></div>`}
- h+=`<div class="sum"><div><span>Week of ${wl(w)}</span><strong>${done} of ${tot} sessions</strong></div><div class="bar"><i style="width:${tot?done/tot*100:0}%"></i></div></div>`;
+ if(!S.ex.length)return `<div class="empty"><p><b>Let's set up your rehab plan</b></p><p>${S.inj.length?'Now add the exercises you do for it.':'Start with the injury you are working on, then add its exercises.'}</p>${S.inj.length?'':'<button class="btn" data-act="newInj">Add injury</button>'}<button class="btn ${S.inj.length?'':'g'}" data-act="newEx">Add exercise</button></div>`;
+ const w=mon(cur),st=wst(w),sk=streak();
+ const dn=cur==TODAY?'Today':cur==ds(TODAY,-1)?'Yesterday':dl(cur,{weekday:'long',day:'numeric',month:'short'});
+ let h=`<div class="nav"><button data-act="wkn" data-id="-1" aria-label="Previous week">${ic('l')}</button><b>${w==NOW?'This week':'Week of '+wl(w)}</b><button data-act="wkn" data-id="1" ${w>=NOW?'disabled':''} aria-label="Next week">${ic('r')}</button></div>`;
+ h+=`<div class="sum"><div class="top"><span class="stk">${ic('flame')}<strong>${sk}</strong><span>week streak</span></span><span><strong>${st.done}</strong> of ${st.tot} sessions</span></div><div class="cal">${LET.map((l,i)=>{const d=ds(w,i),f=d>TODAY;return `<button class="dy ${dayAct(d)?'a':dayPart(d)?'p':''} ${d==cur?'s':''} ${d==TODAY?'t':''} ${f?'f':''} ${pop&&pop.day==d?'pop':''}" data-act="sel" data-id="${d}" ${f?'disabled':''} aria-label="${dl(d,{weekday:'long',day:'numeric',month:'short'})}"><span>${l}</span><b>${+d.slice(8)}</b></button>`}).join('')}</div><div class="bar"><i style="width:${st.tot?Math.min(100,st.done/st.tot*100):0}%"></i><s></s></div></div>`;
  const due=S.inj.filter(i=>i.status!='Recovered'&&!chk(i.id,w)).length;
  if(due&&w==NOW)h+=`<button class="ban" data-act="tab" data-id="inj"><span>Weekly check-in: ${due} injur${due>1?'ies':'y'} to rate</span>${ic('r')}</button>`;
+ h+=`<div class="dh">${dn}</div>`;
  const gs=[...S.inj.map(i=>[i.name,S.ex.filter(e=>e.inj==i.id)]),['Other',S.ex.filter(e=>!S.inj.some(i=>i.id==e.inj))]].filter(g=>g[1].length);
  gs.forEach(g=>{h+=`<div class="grp">${esc(g[0])}</div>`+g[1].map(e=>{
   const c=wc(e,w),x=rd(e,cur),o=open==e.id,tm=e.type=='time';
   let p='';
   if(o){const L=lg(e,cur);
    p=`<div class="pn">`+L.s.slice(0,e.sets).map((s,i)=>{const run=timer&&timer.id==e.id&&timer.i==i&&timer.d==cur;
-    return `<div class="set"><span class="n">Set ${i+1}</span><input type="number" inputmode="numeric" min="0" placeholder="${e.reps}" value="${s.v??''}" data-act="sv" data-id="${e.id}" data-i="${i}"><span class="u">${tm?'sec':'reps'}</span>${tm?`<button class="tb ${run?'on':''}" data-act="${run?'stop':'start'}" data-id="${e.id}" data-i="${i}" aria-label="${run?'Stop timer':'Start timer'}">${run?ic('stop')+'<span id="tm">0:00</span>':ic('play')}</button>`:''}<button class="tk ${s.d?'on':''}" data-act="tick" data-id="${e.id}" data-i="${i}" aria-label="Done">${ic('check')}</button></div>`}).join('')+
+    return `<div class="set"><span class="n">Set ${i+1}</span><input type="number" inputmode="numeric" min="0" placeholder="${e.reps}" value="${s.v??''}" data-act="sv" data-id="${e.id}" data-i="${i}"><span class="u">${tm?'sec':'reps'}</span>${tm?`<button class="tb ${run?'on':''}" data-act="${run?'stop':'start'}" data-id="${e.id}" data-i="${i}" aria-label="${run?'Stop timer':'Start timer'}">${run?ic('stop')+'<span id="tm">0:00</span>':ic('play')}</button>`:''}<button class="tk ${s.d?'on':''} ${pop&&pop.id==e.id&&pop.i==i?'pop':''}" data-act="tick" data-id="${e.id}" data-i="${i}" aria-label="Done">${ic('check')}</button></div>`}).join('')+
    `<div class="wt"><span>Weight</span><span class="st"><button data-act="wd" data-id="${e.id}" ${e.weight?'':'disabled style="opacity:.35"'} aria-label="Lower weight">${ic('minus')}</button><b>${wtx(e)}</b><button data-act="wu" data-id="${e.id}" aria-label="Raise weight">${ic('plus')}</button></span></div></div>`}
   return `<div class="ex ${o?'open':''}"><button class="exh" data-act="tg" data-id="${e.id}"><span class="info"><b>${esc(e.name)}</b><small>${sub(e)}</small></span><span class="dots">${Array.from({length:e.sets},(_,i)=>`<i class="${x&&x.s[i]&&x.s[i].d?'d':''}"></i>`).join('')}</span><span class="cnt ${c>=e.per?'full':''}">${c}/${e.per}</span><span class="chev">${ic('dn')}</span></button>${p}</div>`}).join('')});
- return h;
+ h+=`<div class="grp">Last 6 weeks</div><div class="card hm"><span></span>${LET.map(l=>`<em>${l}</em>`).join('')}<span></span>`;
+ for(let k=5;k>=0;k--){const ws=ds(NOW,-7*k),m=wst(ws).met;h+=`<span class="wl">${dl(ws,{day:'numeric',month:'short'})}</span>`+LET.map((_,i)=>{const d=ds(ws,i);return `<i class="${dayAct(d)?'a':dayPart(d)?'p':''} ${d>TODAY?'f':''}"></i>`}).join('')+`<span class="wm ${m?'m':''}">${m?ic('check'):''}</span>`}
+ return h+'</div>';
 }
 function spark(id){
  const ks=Object.keys(S.checks[id]||{}).sort().slice(-10);if(ks.length<2)return '';
@@ -193,9 +221,7 @@ function injForm(id){
 function setChk(id,k,v){const c=(S.checks[id]=S.checks[id]||{});const o=c[wk]||{pain:+$('#c'+id+' input[data-act=pain]').value,rec:+$('#c'+id+' input[data-act=rec]').value,note:''};o[k]=v;c[wk]=o;save();$('#c'+id).classList.remove('dim')}
 function openLog(){
  const t=document.documentElement.dataset.theme;
- $('#log').innerHTML=`<div class="bk" data-act="close"></div><div class="pan"><h2>re:form · What's new</h2>`+CHANGES.map((c,n)=>`<div style="margin-bottom:8px"><b>v${c[0]}</b>${n==0?`<div class="rel">Released ${REL}</div>`:''}<ul class="cl">${c[1].map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('')+
- `<div class="seg" style="margin-top:14px"><button class="${t=='light'?'on':''}" data-act="theme" data-id="light">${ic('sun')}Light</button><button class="${t=='dark'?'on':''}" data-act="theme" data-id="dark">${ic('moon')}Dark</button></div>
- <div class="acts" style="margin-top:0"><button class="btn g" data-act="exp">Back up</button><button class="btn g" data-act="imp">Restore</button></div></div>`;
+ $('#log').innerHTML=`<div class="bk" data-act="close"></div><div class="pan"><div class="lh"><h2>What's new</h2><button id="thm" data-act="tgl" aria-label="Switch light or dark mode">${ic(t=='dark'?'moon':'sun')}</button></div>`+CHANGES.map((c,n)=>`<div class="cv">v${c[0]}${n==0?`<span>${REL}</span>`:''}</div><p class="cp">${c[1]}</p>`).join('')+`<div class="acts"><button class="btn g s" data-act="exp">Back up</button><button class="btn g s" data-act="imp">Restore</button></div></div>`;
  $('#log').classList.add('on');
 }
 function bindVer(){const v=$('#ver');let t;const s=()=>{t=setTimeout(()=>{t=0;openLog()},500)},c=()=>clearTimeout(t);
@@ -207,12 +233,13 @@ document.addEventListener('click',e=>{
  const ex=S.ex.find(x=>x.id==id);
  if(a=='close')return close();
  if(a=='tab'){tab=id;return render()}
- if(a=='day'){const n=ds(cur,+id);if(n<=TODAY){cur=n;open=null;render()}return}
+ if(a=='sel'){cur=id;open=null;return render()}
+ if(a=='wkn'){let n=ds(cur,7*+id);if(n>TODAY)n=TODAY;if(mon(n)<=NOW){cur=n;open=null;render()}return}
  if(a=='wk'){const n=ds(wk,7*+id);if(n<=NOW){wk=n;render()}return}
  if(a=='tg'){open=open==id?null:id;return render()}
- if(a=='tick'){const s=lg(ex,cur).s[i];s.d=!s.d;if(s.d&&(s.v==null||s.v===''))s.v=ex.reps;lg(ex,cur).w=ex.weight;save();return render()}
+ if(a=='tick'){const be=dayAct(cur),L=lg(ex,cur),s=L.s[i];s.d=!s.d;if(s.d&&(s.v==null||s.v===''))s.v=ex.reps;L.w=ex.weight;save();if(s.d)pop={id,i,day:!be&&dayAct(cur)?cur:null};return render()}
  if(a=='start'){if(!timer){timer={id,i,d:cur,t:Date.now()};render()}return}
- if(a=='stop'){const el=Math.max(1,Math.round((Date.now()-timer.t)/1000)),s=lg(S.ex.find(x=>x.id==timer.id),timer.d).s[timer.i];s.v=el;s.d=true;timer=null;save();return render()}
+ if(a=='stop'){const el=Math.max(1,Math.round((Date.now()-timer.t)/1000)),s=lg(S.ex.find(x=>x.id==timer.id),timer.d).s[timer.i];const be=dayAct(timer.d);s.v=el;s.d=true;const q=timer;timer=null;save();pop={id:q.id,i:q.i,day:!be&&dayAct(q.d)?q.d:null};return render()}
  if(a=='wu'||a=='wd'){ex.weight=Math.max(0,+((ex.weight||0)+(a=='wu'?2.5:-2.5)).toFixed(1))||null;ex.wh=ex.wh.filter(h=>h.d!=cur);ex.wh.push({d:cur,w:ex.weight});save();return render()}
  if(a=='nt'){nOpen[id]=1;return render()}
  if(a=='newEx')return exForm();if(a=='editEx')return exForm(id);
@@ -227,7 +254,7 @@ document.addEventListener('click',e=>{
  if(a=='saveInj'){const n=$('#f-n').value.trim();if(!n){$('#f-n').focus();return}
   const st=$('#f-d').value;if(id){const j=S.inj.find(x=>x.id==id);j.name=n;j.start=st}else S.inj.push({id:uid(),name:n,status:'Active',start:st});save();close();return render()}
  if(a=='delInj'){S.inj=S.inj.filter(x=>x.id!=id);delete S.checks[id];S.ex.forEach(x=>{if(x.inj==id)x.inj=''});save();close();return render()}
- if(a=='theme'){theme(id);return openLog()}
+ if(a=='tgl'){const n=document.documentElement.dataset.theme=='dark'?'light':'dark';theme(n);$('#thm').innerHTML=ic(n=='dark'?'moon':'sun');return}
  if(a=='exp'){const l=document.createElement('a');l.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));l.download='reform-backup-'+iso(new Date())+'.json';l.click()}
  if(a=='imp')$('#imp').click();
 });
