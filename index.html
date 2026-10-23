@@ -162,16 +162,17 @@ main{padding-top:8px}.nav{margin-bottom:8px}.nav button{width:36px;height:36px}
 .ih .info small{white-space:nowrap}.ih .info{overflow:hidden}.hr{grid-template-columns:98px 1fr}
 .wd b{display:block;font-size:13px;margin:12px 0 2px}.wd .hh2 span:first-child{color:var(--tx);white-space:normal}.hm [data-act]{cursor:pointer}
 #splash .sd1,#splash .sd2{transform-box:fill-box;transform-origin:center}
-#splash .sd1{animation:sdf .7s .1s both}
-#splash .sa{stroke-dasharray:1;animation:sdr .6s .75s both ease-in-out}
-#splash .sar{transform-box:view-box;transform-origin:50px 34px;animation:sat .25s 1.3s both ease-out}
-#splash .sd2{animation:sdp .3s 1.5s both ease-out}
-#splash b{animation:sfi .5s 1.1s both}
-@keyframes sdf{0%{opacity:0;transform:scale(.4)}18%{opacity:1;transform:scale(1.35)}32%{opacity:.15;transform:scale(1)}50%{opacity:1}66%{opacity:.2}82%{opacity:1}100%{opacity:1;transform:scale(1)}}
+#splash .sd1{animation:sdf .35s .1s both ease-out}
+#splash .sa{stroke-dasharray:1;animation:sdr .6s .5s both ease-in-out}
+#splash .sar{transform-box:view-box;transform-origin:50px 34px;animation:sat .25s 1.1s both ease-out}
+#splash .sd2{animation:sdp .3s 1.3s both ease-out}
+#splash b{animation:sfi .5s .9s both}
+@keyframes sdf{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
 @keyframes sdr{0%{opacity:0;stroke-dashoffset:1}1%{opacity:1;stroke-dashoffset:1}100%{opacity:1;stroke-dashoffset:0}}
 @keyframes sat{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
 @keyframes sdp{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
 @keyframes sfi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.bdp{display:block;margin:18px auto 0;font-size:13px;color:var(--ac);font-weight:600;padding:8px 14px;border-radius:99px;background:var(--acs)}.bdp+#ver{margin-top:8px}.bd small{font-size:12px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head>
 <body>
@@ -181,11 +182,11 @@ main{padding-top:8px}.nav{margin-bottom:8px}.nav button{width:36px;height:36px}
 <div id="sheet"></div><div id="log"></div>
 <input type="file" id="imp" accept=".json" hidden>
 <script>
-const VER='1.8.0',REL='22 Oct 2026';
+const VER='1.8.1',REL='22 Oct 2026';
 const CHANGES=[
+['1.8.1','Icon badge now works on Android through a notification. Simpler first-dot animation on the splash.'],
 ['1.8.0','Animated splash. Past days list only what you logged. Tap a week in the 6-week view for details. Clearer exercise history and charts.'],
-['1.7.0','Exercise history and progress charts. Icon badge for exercises left today. Cleaner set headers.'],
-['1.6.0','Set table with KG / REPS / TIME headers and a tighter layout. Level-up prompts after steady sessions.']];
+['1.7.0','Exercise history and progress charts. Icon badge for exercises left today. Cleaner set headers.']];
 const $=s=>document.querySelector(s),KEY='rehab-data-v1';
 const P={plus:'<path d="M12 5v14M5 12h14"/>',minus:'<path d="M5 12h14"/>',l:'<path d="M15 18l-6-6 6-6"/>',r:'<path d="M9 18l6-6-6-6"/>',dn:'<path d="M6 9l6 6 6-6"/>',
 check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',play:'<path d="M8 5.5v13l11-6.5z"/>',stop:'<rect x="6.5" y="6.5" width="11" height="11" rx="2"/>',
@@ -232,7 +233,7 @@ function theme(t){if(t)localStorage.setItem('rehab-theme',t);const v=localStorag
 theme();
 
 const ORDER=['today','inj','ex'];
-const pageHtml=t=>({today:vToday,inj:vInj,ex:vEx})[t]()+(t=='today'?`<button id="ver">v${VER}</button>`:'');
+const pageHtml=t=>({today:vToday,inj:vInj,ex:vEx})[t]()+(t=='today'?BDP()+`<button id="ver">v${VER}</button>`:'');
 const TABS=[['today','Dashboard','dash'],['inj','Injuries','inj'],['ex','Exercises','ex']];
 $('#tabs').innerHTML=TABS.map(t=>`<button data-act="tab" data-id="${t[0]}">${ic(t[2])}${t[1]}</button>`).join('');
 function render(){
@@ -301,10 +302,20 @@ function wkSheet(ws){const st=wst(ws);let body='';
  for(let i=0;i<7;i++){const d=ds(ws,i),xs=S.ex.map(e=>({e,x:rd(e,d)})).filter(o=>o.x&&o.x.s.slice(0,o.e.sets).some(q=>q.d));if(!xs.length)continue;
   body+=`<div class="wd"><b>${dl(d,{weekday:'long',day:'numeric',month:'short'})}</b>`+xs.map(o=>`<div class="hh2"><span>${esc(o.e.name)}</span><span>${setsStr(o.e,o.x.s.slice(0,o.e.sets).filter(q=>q.d))}</span></div>`).join('')+`</div>`}
  sheet(`<h2>${wl(ws)}</h2><div class="mut" style="margin-bottom:4px">${st.done} of ${st.tot} sessions${st.met?' · goal met':''}</div>`+(body||'<div class="mut" style="padding-top:8px">No exercises logged this week.</div>'))}
-let badgeOn=localStorage.getItem('rehab-badge')!='0';
+let badgeOn=localStorage.getItem('rehab-badge')=='1',lastN=-1;
+const canNote=()=>'Notification' in window&&'serviceWorker' in navigator;
 const outstanding=()=>S.ex.filter(e=>!full(e,TODAY)&&wc(e,NOW)<e.per).length;
-function updateBadge(){if(!('setAppBadge' in navigator))return;try{const n=badgeOn?outstanding():0;(n?navigator.setAppBadge(n):navigator.clearAppBadge()).catch(()=>{})}catch(e){}}
-const BDG=()=>'setAppBadge' in navigator?`<div class="bd"><span>Icon badge for exercises left today</span><button id="bdg" class="sw ${badgeOn?'on':''}" data-act="bdg" aria-label="Toggle icon badge"><i></i></button></div>`:'';
+function snap(){try{const o={ex:S.ex.map(e=>({per:e.per,days:Object.keys(S.logs[e.id]||{}).filter(d=>full(e,d))}))};caches.open('reform-data').then(c=>c.put('snap',new Response(JSON.stringify(o)))).catch(()=>{})}catch(e){}}
+function note(n){if(!canNote()||Notification.permission!='granted')return;navigator.serviceWorker.ready.then(r=>{if(n>0)return r.showNotification('re:form',{body:n+' exercise'+(n>1?'s':'')+' left today',tag:'left',silent:true,icon:'icon-192.png',badge:'icon-192.png'});return r.getNotifications({tag:'left'}).then(a=>a.forEach(x=>x.close()))}).catch(()=>{})}
+function updateBadge(){const n=badgeOn&&(!canNote()||Notification.permission=='granted')?outstanding():0;
+ if('setAppBadge' in navigator){try{(n?navigator.setAppBadge(n):navigator.clearAppBadge()).catch(()=>{})}catch(e){}}
+ if(badgeOn)snap();if(n!=lastN){lastN=n;note(n)}}
+function setBadge(on){const done=()=>{badgeOn=on&&canNote()&&Notification.permission=='granted';localStorage.setItem('rehab-badge',badgeOn?'1':'0');lastN=-1;
+  if(canNote())navigator.serviceWorker.ready.then(r=>{if(r.periodicSync)(badgeOn?r.periodicSync.register('reform-left',{minInterval:12*36e5}):r.periodicSync.unregister('reform-left')).catch(()=>{})}).catch(()=>{});
+  updateBadge();render();if($('#log').classList.contains('on'))openLog()};
+ if(on&&canNote()&&Notification.permission=='default')Notification.requestPermission().then(done).catch(done);else done()}
+const BDG=()=>{if(!canNote())return '';const p=Notification.permission;return `<div class="bd"><span>Icon badge for exercises left today${p=='denied'?'<br><small>Blocked: allow notifications for re:form in your phone settings</small>':''}</span><button id="bdg" class="sw ${badgeOn&&p=='granted'?'on':''}" data-act="bdg" aria-label="Toggle icon badge"><i></i></button></div>`};
+const BDP=()=>canNote()&&Notification.permission!='denied'&&!badgeOn?`<button class="bdp" data-act="bdon">Turn on icon badge for exercises left today</button>`:'';
 function ipanel(i){
  const xs=S.ex.filter(e=>e.inj==i.id),ks=Object.keys(S.checks[i.id]||{}).sort().reverse().slice(0,12);
  return `<div class="ip"><div class="grp">Exercises &amp; progress</div>`+(xs.length?xs.map(XL).join(''):`<div class="mut">No exercises linked yet.</div>`)+
@@ -379,7 +390,8 @@ document.addEventListener('click',e=>{
  if(a=='hx')return hxSheet(id);
  if(a=='xtg'){xopen=xopen==id?null:id;return render()}
  if(a=='pain'){setChk(id,'pain',+b.value);$('#s'+id).innerHTML=spark(id);return}
- if(a=='bdg'){badgeOn=!badgeOn;localStorage.setItem('rehab-badge',badgeOn?'1':'0');b.classList.toggle('on',badgeOn);if(badgeOn&&window.Notification&&Notification.permission=='default')Notification.requestPermission().then(updateBadge).catch(()=>{});updateBadge();return}
+ if(a=='bdg'){setBadge(!(badgeOn&&Notification.permission=='granted'));return}
+ if(a=='bdon'){setBadge(true);return}
  if(a=='nt'){nOpen[id]=1;return render()}
  if(a=='itg'){iopen=iopen==id?null:id;return render()}
  if(a=='newExI')return exForm(null,id);
@@ -442,9 +454,9 @@ pg.addEventListener('touchmove',e=>{
 },{passive:true});
 pg.addEventListener('touchend',()=>swEnd(false));
 pg.addEventListener('touchcancel',()=>swEnd(true));
-function refreshDay(){const nd=iso(new Date());if(nd!=TODAY){TODAY=nd;NOW=mon(nd);cur=TODAY;wk=NOW;pastAll=false}render()}
+function refreshDay(){const nd=iso(new Date());if(nd!=TODAY){TODAY=nd;NOW=mon(nd);cur=TODAY;wk=NOW;pastAll=false;lastN=-1}render()}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshDay()});
 const hideSplash=()=>{const sp=$('#splash');if(sp){sp.classList.add('off');setTimeout(()=>sp.remove(),500)}};
-$('#splash').addEventListener('click',hideSplash);setTimeout(hideSplash,rm()?700:2100);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
+$('#splash').addEventListener('click',hideSplash);setTimeout(hideSplash,rm()?700:1900);
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').then(()=>{if(badgeOn&&canNote())navigator.serviceWorker.ready.then(r=>{if(r.periodicSync)r.periodicSync.register('reform-left',{minInterval:12*36e5}).catch(()=>{})})}).catch(()=>{});
 </script></body></html>
