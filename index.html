@@ -160,20 +160,32 @@ main{padding-top:8px}.nav{margin-bottom:8px}.nav button{width:36px;height:36px}
 #splash{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--bg);transition:opacity .45s ease}#splash.off{opacity:0;pointer-events:none}#splash svg{width:92px;height:92px}#splash b{font-size:26px;font-weight:650;letter-spacing:-.01em}
 .set .wi,.set .ri{width:100%}
 .ih .info small{white-space:nowrap}.ih .info{overflow:hidden}.hr{grid-template-columns:98px 1fr}
+.wd b{display:block;font-size:13px;margin:12px 0 2px}.wd .hh2 span:first-child{color:var(--tx);white-space:normal}.hm [data-act]{cursor:pointer}
+#splash .sd1,#splash .sd2{transform-box:fill-box;transform-origin:center}
+#splash .sd1{animation:sdf .7s .1s both}
+#splash .sa{stroke-dasharray:1;animation:sdr .6s .75s both ease-in-out}
+#splash .sar{transform-box:view-box;transform-origin:50px 34px;animation:sat .25s 1.3s both ease-out}
+#splash .sd2{animation:sdp .3s 1.5s both ease-out}
+#splash b{animation:sfi .5s 1.1s both}
+@keyframes sdf{0%{opacity:0;transform:scale(.4)}18%{opacity:1;transform:scale(1.35)}32%{opacity:.15;transform:scale(1)}50%{opacity:1}66%{opacity:.2}82%{opacity:1}100%{opacity:1;transform:scale(1)}}
+@keyframes sdr{0%{opacity:0;stroke-dashoffset:1}1%{opacity:1;stroke-dashoffset:1}100%{opacity:1;stroke-dashoffset:0}}
+@keyframes sat{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
+@keyframes sdp{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
+@keyframes sfi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head>
 <body>
-<div id="splash"><svg viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="22.5" fill="#7a4de8"/><path d="M54.95 61.96A18.6 18.6 0 1 1 50 33.9" fill="none" stroke="#fff" stroke-width="5.9" stroke-linecap="round"/><path d="M54.2 26.7L45.9 41.1 59.3 39.3z" fill="#fff" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><circle cx="69.5" cy="42.2" r="3.7" fill="#fff"/><circle cx="69.5" cy="57.8" r="3.7" fill="#fff"/></svg><b>re:form</b></div>
+<div id="splash"><svg viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="22.5" fill="#7a4de8"/><circle class="sd1" cx="69.5" cy="57.8" r="3.7" fill="#fff"/><path class="sa" pathLength="1" d="M54.95 61.96A18.6 18.6 0 1 1 50 33.9" fill="none" stroke="#fff" stroke-width="5.9" stroke-linecap="round"/><path class="sar" d="M54.2 26.7L45.9 41.1 59.3 39.3z" fill="#fff" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><circle class="sd2" cx="69.5" cy="42.2" r="3.7" fill="#fff"/></svg><b>re:form</b></div>
 <div id="pg"><main id="app"></main><main id="app2" aria-hidden="true"></main></div>
 <nav class="tabs" id="tabs"></nav>
 <div id="sheet"></div><div id="log"></div>
 <input type="file" id="imp" accept=".json" hidden>
 <script>
-const VER='1.7.0',REL='22 Oct 2026';
+const VER='1.8.0',REL='22 Oct 2026';
 const CHANGES=[
-['1.7.0','Exercise history and progress charts. Icon badge for exercises left today. Splash shows the app name. Cleaner set headers. Dashboard no longer pages back through weeks.'],
-['1.6.0','Set table with KG / REPS / TIME headers and a tighter layout. Level-up prompts after steady sessions.'],
-['1.5.0','Weight box beside reps for every set. Party flourish when an exercise is finished.']];
+['1.8.0','Animated splash. Past days list only what you logged. Tap a week in the 6-week view for details. Clearer exercise history and charts.'],
+['1.7.0','Exercise history and progress charts. Icon badge for exercises left today. Cleaner set headers.'],
+['1.6.0','Set table with KG / REPS / TIME headers and a tighter layout. Level-up prompts after steady sessions.']];
 const $=s=>document.querySelector(s),KEY='rehab-data-v1';
 const P={plus:'<path d="M12 5v14M5 12h14"/>',minus:'<path d="M5 12h14"/>',l:'<path d="M15 18l-6-6 6-6"/>',r:'<path d="M9 18l6-6-6-6"/>',dn:'<path d="M6 9l6 6 6-6"/>',
 check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',play:'<path d="M8 5.5v13l11-6.5z"/>',stop:'<rect x="6.5" y="6.5" width="11" height="11" rx="2"/>',
@@ -197,7 +209,7 @@ const dl=(k,o)=>new Date(k+'T12:00').toLocaleDateString('en',o);
 const wl=k=>{const a=new Date(k+'T12:00'),b=new Date(ds(k,6)+'T12:00'),m=d=>d.toLocaleDateString('en',{month:'short'});return a.getMonth()==b.getMonth()?`${m(a)} ${a.getDate()}–${b.getDate()}`:`${m(a)} ${a.getDate()} – ${m(b)} ${b.getDate()}`};
 const T=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
 let TODAY=iso(new Date()),NOW=mon(TODAY);
-let xopen=null,iopen=null,histOpen=false,pop=null,tab='today',cur=TODAY,wk=NOW,open=null,timer=null,ft='reps',nOpen={};
+let pastAll=false,xopen=null,iopen=null,histOpen=false,pop=null,tab='today',cur=TODAY,wk=NOW,open=null,timer=null,ft='reps',nOpen={};
 const lg=(e,d)=>{const l=(S.logs[e.id]=S.logs[e.id]||{});const x=l[d]=l[d]||{s:[]};while(x.s.length<e.sets)x.s.push({v:null,d:false});return x};
 const rd=(e,d)=>(S.logs[e.id]||{})[d];
 const full=(e,d)=>{const x=rd(e,d);return !!x&&x.s.slice(0,e.sets).filter(s=>s.d).length>=e.sets};
@@ -236,7 +248,7 @@ const wst=w=>{let tot=0,done=0;S.ex.forEach(e=>{tot+=e.per;done+=Math.min(e.per,
 function streak(){let w=NOW,n=0;if(!wst(w).met)w=ds(w,-7);while(n<260&&wst(w).met){n++;w=ds(w,-7)}return n}
 function HIST(){
  let h=`<div class="hx ${histOpen?'on':''}" id="hx"><div><div class="grp" style="margin-top:2px">Last 6 weeks</div><div class="card hm"><span></span>${LET.map(l=>`<em>${l}</em>`).join('')}<span></span>`;
- for(let k=5;k>=0;k--){const ws=ds(NOW,-7*k),m=wst(ws).met;h+=`<span class="wl">${dl(ws,{day:'numeric',month:'short'})}</span>`+LET.map((_,i)=>{const d=ds(ws,i);return `<i class="${dayAct(d)?'a':dayPart(d)?'p':''} ${d>TODAY?'f':''}"></i>`}).join('')+`<span class="wm ${m?'m':''}">${m?ic('check'):''}</span>`}
+ for(let k=5;k>=0;k--){const ws=ds(NOW,-7*k),m=wst(ws).met;const W=`data-act="wkv" data-id="${ws}"`;h+=`<span class="wl" ${W}>${dl(ws,{day:'numeric',month:'short'})}</span>`+LET.map((_,i)=>{const d=ds(ws,i);return `<i ${W} class="${dayAct(d)?'a':dayPart(d)?'p':''} ${d>TODAY?'f':''}"></i>`}).join('')+`<span ${W} class="wm ${m?'m':''}">${m?ic('check'):''}</span>`}
  return h+'</div></div></div>';
 }
 function vToday(){
@@ -249,7 +261,8 @@ function vToday(){
  const due=S.inj.filter(i=>i.status!='Recovered'&&!chk(i.id,w)).length;
  if(due&&w==NOW)h+=`<button class="ban" data-act="tab" data-id="inj"><span>Weekly check-in: ${due} injur${due>1?'ies':'y'} to rate</span>${ic('r')}</button>`;
  h+=`<div class="dh">${dn}</div>`;
- const gs=[...S.inj.map(i=>[i.name,S.ex.filter(e=>e.inj==i.id)]),[S.inj.length?'Other':'Exercises',S.ex.filter(e=>!S.inj.some(i=>i.id==e.inj))]].filter(g=>g[1].length);
+ const past=cur<TODAY,exs=past&&!pastAll?S.ex.filter(e=>{const x=rd(e,cur);return x&&x.s.slice(0,e.sets).some(q=>q.d)}):S.ex;
+ const gs=[...S.inj.map(i=>[i.name,exs.filter(e=>e.inj==i.id)]),[S.inj.length?'Other':'Exercises',exs.filter(e=>!S.inj.some(i=>i.id==e.inj))]].filter(g=>g[1].length);
  gs.forEach(g=>{h+=`<div class="grp">${esc(g[0])}</div>`+g[1].map(e=>{
   const c=wc(e,w),x=rd(e,cur),o=open==e.id,tm=e.type=='time';
   let p='';
@@ -257,6 +270,7 @@ function vToday(){
    p=`<div class="pn"><div class="sh ${cl}"><span>SET</span><span>${ic('dumb')}KG</span><span>${tm?'TIME (S)':'REPS'}</span>${tm?'<span></span>':''}<span>${ic('check')}</span></div>`+Array.from({length:e.sets},(_,i)=>L.s[i]||{v:null,d:false}).map((s,i)=>{const run=timer&&timer.id==e.id&&timer.i==i&&timer.d==cur;
     return `<div class="set ${cl} ${s.d?'dn':''}"><span class="n">${i+1}</span><input type="number" class="wi" inputmode="decimal" step="0.5" min="0" placeholder="–" value="${(s.w!=null?s.w:e.weight)??''}" data-act="sw" data-id="${e.id}" data-i="${i}" aria-label="Weight in kg"><input type="number" class="ri" inputmode="numeric" min="0" placeholder="${e.reps}" value="${s.v??''}" data-act="sv" data-id="${e.id}" data-i="${i}" aria-label="${tm?'Seconds':'Reps'}">${tm?`<button class="tb ${run?'on':''}" data-act="${run?'stop':'start'}" data-id="${e.id}" data-i="${i}" aria-label="${run?'Stop timer':'Start timer'}">${run?ic('stop')+'<span id="tm">0:00</span>':ic('play')}</button>`:''}<button class="tk ${s.d?'on':''} ${pop&&pop.id==e.id&&pop.i==i?'pop':''}" data-act="tick" data-id="${e.id}" data-i="${i}" aria-label="Done">${ic('check')}</button></div>`}).join('')+LV(e)+XA(e)+`</div>`}
   return `<div class="ex ${o?'open':''} ${full(e,cur)?'fin':''}"><button class="exh" data-act="tg" data-id="${e.id}"><span class="info"><b>${esc(e.name)}</b><small>${sub(e)}</small></span><span class="dots">${Array.from({length:e.sets},(_,i)=>`<i class="${x&&x.s[i]&&x.s[i].d?'d':''}"></i>`).join('')}</span>${ready(e)?`<span class="up2" aria-label="Ready to level up">${ic('up')}</span>`:''}<span class="cnt ${c>=e.per?'full':''}">${Math.min(c,e.per)}/${e.per}</span><span class="chev">${ic('dn')}</span></button>${p}${pop&&pop.fin==e.id?FX():''}</div>`}).join('')});
+ if(past)h+=(exs.length?'':`<div class="mut" style="padding:10px 4px">No exercises logged on this day.</div>`)+`<button class="lk" data-act="pall">${pastAll?'Hide exercises not logged':'+ Log a missed exercise'}</button>`;
  return h;
 }
 function spark(id){
@@ -266,18 +280,27 @@ function spark(id){
 }
 function since(s){if(!s)return 'No start date';const d=Math.max(0,Math.floor((new Date(TODAY+'T12:00')-new Date(s+'T12:00'))/864e5));return 'Since '+dl(s,{day:'numeric',month:'short'})+' · '+(d<14?d+' d':Math.floor(d/7)+' wks')}
 const fv=n=>+(+n).toFixed(1);
+const setsStr=(e,ss)=>{const t=e.type=='time',ws=[...new Set(ss.map(q=>q.w||0))],vs=ss.map(q=>q.v),same=vs.every(x=>x==vs[0]);
+ if(ws.length==1)return (ws[0]?fv(ws[0])+' kg · ':'')+(same&&vs.length>1?vs.length+' × '+vs[0]:vs.join(', '))+(t?' s':' reps');
+ return ss.map(q=>`${q.w?fv(q.w)+' kg × ':''}${q.v}${t?' s':''}`).join(' · ')};
 function prog(e){const L=S.logs[e.id]||{},pts=[];
- Object.keys(L).sort().forEach(d=>{const dn=L[d].s.slice(0,e.sets).filter(s=>s.d);if(!dn.length)return;pts.push({d,w:Math.max(0,...dn.map(s=>s.w||0)),v:Math.max(0,...dn.map(s=>s.v||0))})});
- const u=pts.some(q=>q.w>0)?'kg':e.type=='time'?'sec':'reps';return{u,pts:pts.map(q=>({d:q.d,y:u=='kg'?q.w:q.v}))}}
+ Object.keys(L).sort().forEach(d=>{const dn=L[d].s.slice(0,e.sets).filter(q=>q.d);if(!dn.length)return;pts.push({d,w:Math.max(0,...dn.map(q=>q.w||0)),v:Math.max(0,...dn.map(q=>q.v||0))})});
+ const wp=pts.filter(q=>q.w>0);
+ if(wp.length>=2)return{u:'kg',lab:'Top weight',pts:wp.map(q=>({d:q.d,y:q.w}))};
+ return{u:e.type=='time'?'sec':'reps',lab:'Best set',pts:pts.map(q=>({d:q.d,y:q.v}))}}
 const chart=(pts,W,H,big)=>{if(pts.length<2)return '';const ys=pts.map(q=>q.y),mn=Math.min(...ys),mx=Math.max(...ys),r=mx-mn;
  const xy=pts.map((q,i)=>[4+i/(pts.length-1)*(W-8),r?H-4-(q.y-mn)/r*(H-8):H/2]),z=xy[xy.length-1];
  return `<svg viewBox="0 0 ${W} ${H}" ${big?'preserveAspectRatio="none"':`width="${W}" height="${H}"`}><polyline points="${xy.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ')}" fill="none" stroke="var(--ac)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${big?'vector-effect="non-scaling-stroke"':''}/>${big?'':`<circle cx="${z[0].toFixed(1)}" cy="${z[1].toFixed(1)}" r="2.8" fill="var(--ac)"/>`}</svg>`};
 const XA=e=>`<div class="xa"><button data-act="hx" data-id="${e.id}">${ic('hist')}History</button><button data-act="editEx" data-id="${e.id}">${ic('edit')}Edit</button></div>`;
-const XL=e=>{const p=prog(e),a=p.pts[0],z=p.pts[p.pts.length-1];return `<button class="xl" data-act="hx" data-id="${e.id}"><span class="xn2"><b>${esc(e.name)}</b><small>${sub(e)} · ${e.per}×/wk</small></span><span class="xc">${p.pts.length>1?chart(p.pts,64,22)+`<small>${fv(a.y)} → ${fv(z.y)} ${p.u}</small>`:'<small>No trend yet</small>'}</span></button>`};
-function hxSheet(id){const e=S.ex.find(x=>x.id==id);if(!e)return;const L=S.logs[id]||{},p=prog(e),t=e.type=='time';
- const days=Object.keys(L).filter(d=>L[d].s.some(s=>s.d)).sort().reverse().slice(0,20);
- const row=d=>{const st=L[d].s.filter(s=>s.d).map(s=>`${s.w?fv(s.w)+' kg × ':''}${s.v}${t?' s':''}`),same=st.every(x=>x==st[0]);return `<div class="hh2"><span>${dl(d,{weekday:'short',day:'numeric',month:'short'})}</span><span>${same&&st.length>1?st.length+' × '+st[0]:st.join(' · ')}</span></div>`};
- sheet(`<h2>${esc(e.name)}</h2>`+(p.pts.length>1?`<div class="hxs">${chart(p.pts,300,60,1)}<div class="mut">${fv(p.pts[0].y)} → ${fv(p.pts[p.pts.length-1].y)} ${p.u} over ${p.pts.length} sessions</div></div>`:'<div class="mut" style="margin-bottom:8px">A trend chart appears after two sessions.</div>')+(days.length?days.map(row).join(''):'<div class="mut">No sessions logged yet.</div>')+`<div class="acts"><button class="btn g" data-act="editEx" data-id="${id}">Edit exercise</button></div>`)}
+const XL=e=>{const p=prog(e),n=p.pts.length;return `<button class="xl" data-act="hx" data-id="${e.id}"><span class="xn2"><b>${esc(e.name)}</b><small>${sub(e)} · ${e.per}×/wk</small></span><span class="xc">${n>2?chart(p.pts,64,22)+`<small>${fv(p.pts[0].y)} → ${fv(p.pts[n-1].y)} ${p.u}</small>`:'<small>No trend yet</small>'}</span></button>`};
+function hxSheet(id){const e=S.ex.find(x=>x.id==id);if(!e)return;const L=S.logs[id]||{},p=prog(e),n=p.pts.length;
+ const days=Object.keys(L).filter(d=>L[d].s.slice(0,e.sets).some(q=>q.d)).sort().reverse().slice(0,20);
+ const row=d=>`<div class="hh2"><span>${dl(d,{weekday:'short',day:'numeric',month:'short'})}</span><span>${setsStr(e,L[d].s.slice(0,e.sets).filter(q=>q.d))}</span></div>`;
+ sheet(`<h2>${esc(e.name)}</h2>`+(n>2?`<div class="hxs">${chart(p.pts,300,60,1)}<div class="mut">${p.lab}: ${fv(p.pts[0].y)} → ${fv(p.pts[n-1].y)} ${p.u} · ${n} sessions</div></div>`:`<div class="mut" style="margin-bottom:8px">Trend chart appears after 3 sessions.</div>`)+(days.length?days.map(row).join(''):'<div class="mut">No sessions logged yet.</div>')+`<div class="acts"><button class="btn g" data-act="editEx" data-id="${id}">Edit exercise</button></div>`)}
+function wkSheet(ws){const st=wst(ws);let body='';
+ for(let i=0;i<7;i++){const d=ds(ws,i),xs=S.ex.map(e=>({e,x:rd(e,d)})).filter(o=>o.x&&o.x.s.slice(0,o.e.sets).some(q=>q.d));if(!xs.length)continue;
+  body+=`<div class="wd"><b>${dl(d,{weekday:'long',day:'numeric',month:'short'})}</b>`+xs.map(o=>`<div class="hh2"><span>${esc(o.e.name)}</span><span>${setsStr(o.e,o.x.s.slice(0,o.e.sets).filter(q=>q.d))}</span></div>`).join('')+`</div>`}
+ sheet(`<h2>${wl(ws)}</h2><div class="mut" style="margin-bottom:4px">${st.done} of ${st.tot} sessions${st.met?' · goal met':''}</div>`+(body||'<div class="mut" style="padding-top:8px">No exercises logged this week.</div>'))}
 let badgeOn=localStorage.getItem('rehab-badge')!='0';
 const outstanding=()=>S.ex.filter(e=>!full(e,TODAY)&&wc(e,NOW)<e.per).length;
 function updateBadge(){if(!('setAppBadge' in navigator))return;try{const n=badgeOn?outstanding():0;(n?navigator.setAppBadge(n):navigator.clearAppBadge()).catch(()=>{})}catch(e){}}
@@ -342,7 +365,9 @@ document.addEventListener('click',e=>{
  if(a=='close')return close();
  if(a=='tab'){if(id==tab)return;const d=Math.sign(ORDER.indexOf(id)-ORDER.indexOf(tab));tab=id;render();scrollTo(0,0);if(!rm())$('#app').animate([{transform:`translateX(${d*36}px)`,opacity:0},{transform:'none',opacity:1}],{duration:280,easing:'cubic-bezier(.22,.8,.3,1)'});return}
  if(a=='hist'){histOpen=!histOpen;$('#hx').classList.toggle('on',histOpen);$('#hc').classList.toggle('o',histOpen);return}
- if(a=='sel'){cur=id;open=null;return render()}
+ if(a=='sel'){cur=id;open=null;pastAll=false;return render()}
+ if(a=='pall'){pastAll=!pastAll;return render()}
+ if(a=='wkv')return wkSheet(id);
  if(a=='wk'){const n=ds(wk,7*+id);if(n<=NOW){wk=n;render()}return}
  if(a=='tg'){open=open==id?null:id;return render()}
  if(a=='tick'){const be=dayAct(cur),bf=full(ex,cur),L=lg(ex,cur),s=L.s[i];s.d=!s.d;if(s.d){if(s.v==null||s.v==='')s.v=ex.reps;if(s.w==null)s.w=ex.weight;L.tg=ex.reps}else s.w=null;save();if(s.d)pop={id,i,day:!be&&dayAct(cur)?cur:null,fin:!bf&&full(ex,cur)?id:null};return render()}
@@ -417,8 +442,9 @@ pg.addEventListener('touchmove',e=>{
 },{passive:true});
 pg.addEventListener('touchend',()=>swEnd(false));
 pg.addEventListener('touchcancel',()=>swEnd(true));
-function refreshDay(){const nd=iso(new Date());if(nd!=TODAY){TODAY=nd;NOW=mon(nd);cur=TODAY;wk=NOW}render()}
+function refreshDay(){const nd=iso(new Date());if(nd!=TODAY){TODAY=nd;NOW=mon(nd);cur=TODAY;wk=NOW;pastAll=false}render()}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshDay()});
-setTimeout(()=>{const sp=$('#splash');if(sp){sp.classList.add('off');setTimeout(()=>sp.remove(),500)}},750);
+const hideSplash=()=>{const sp=$('#splash');if(sp){sp.classList.add('off');setTimeout(()=>sp.remove(),500)}};
+$('#splash').addEventListener('click',hideSplash);setTimeout(hideSplash,rm()?700:2100);
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script></body></html>
