@@ -10,6 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="re:form">
 <meta name="theme-color" content="#f7f5fb">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('rehab-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light')}catch(e){}</script>
 <style>
 :root{--bg:#f7f5fb;--card:#fff;--tx:#1d1830;--mut:#7d7794;--ln:#e8e3f3;--ac:#7a4de8;--acs:#efe9fc;--warn:#d9534f;--ok:#2e9d5b}
 [data-theme=dark]{--bg:#120f1a;--card:#1b1726;--tx:#ece8f7;--mut:#948dac;--ln:#2c2640;--ac:#a98bff;--acs:#2a2145;--warn:#ef7a75;--ok:#52c283}
@@ -50,7 +51,7 @@ select,input[type=text],input[type=number],input[type=date],textarea{background:
 select{width:auto;padding:5px 8px;font-size:13px}
 input:focus,textarea:focus,select:focus{border-color:var(--ac)}
 .ic{padding:12px 14px}.ih{display:flex;align-items:center;gap:10px}.ih .info b{font-size:16px}
-.ih svg.sp,.sp svg{width:64px;height:24px}.sp{color:var(--mut);font-size:11px}
+.ih svg.sp,.sp svg{width:48px;height:22px}.sp{color:var(--mut);font-size:11px}
 .sg{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px}
 .sl label{display:flex;justify-content:space-between;font-size:12.5px;color:var(--mut);margin-bottom:2px}.sl label span{color:var(--tx);font-weight:600}
 input[type=range]{width:100%;accent-color:var(--ac);margin:0;height:26px}
@@ -147,26 +148,39 @@ main{padding-top:8px}.nav{margin-bottom:8px}.nav button{width:36px;height:36px}
 .dh{margin:12px 4px 0;font-size:16px}.grp{margin:12px 4px 4px}
 .ex,.row,.ic{margin-bottom:6px}.exh{padding:9px 10px 9px 14px;gap:8px}.info b{font-size:15px}.pn{padding:0 14px 10px}.row{padding:9px 10px 9px 14px}
 .ic{padding:10px 12px}.ih .info b{font-size:15px}.dots i{width:7px;height:7px}.tabs button{padding:4px 0}
+
+.sh{padding:4px 6px 2px;margin:0 -6px}
+.xa{display:flex;gap:18px;justify-content:flex-end;margin-top:6px}.xa button{display:flex;align-items:center;gap:5px;color:var(--ac);font-size:13px;font-weight:600;padding:4px 0}.xa svg{width:16px;height:16px}
+.xn2{min-width:0;text-align:left}.xn2 b{display:block;font-size:14px;font-weight:600}.xn2 small{color:var(--mut);font-size:12px;font-weight:400}
+.xc{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none}.xc small{color:var(--mut);font-size:11.5px;font-weight:400}
+.hxs{margin-bottom:10px}.hxs svg{width:100%;height:60px;display:block;margin-bottom:4px}
+.hh2{display:flex;justify-content:space-between;gap:12px;padding:7px 2px;border-bottom:1px solid var(--ln);font-size:13px}.hh2 span:first-child{color:var(--mut);white-space:nowrap}.hh2 span:last-child{text-align:right;font-weight:600}
+.bd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;font-size:13px;color:var(--mut)}
+.sw{width:42px;height:24px;flex:none;border-radius:99px;background:var(--ln);position:relative;transition:background .25s}.sw i{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .25s}.sw.on{background:var(--ac)}.sw.on i{transform:translateX(18px)}
+#splash{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--bg);transition:opacity .45s ease}#splash.off{opacity:0;pointer-events:none}#splash svg{width:92px;height:92px}#splash b{font-size:26px;font-weight:650;letter-spacing:-.01em}
+.set .wi,.set .ri{width:100%}
+.ih .info small{white-space:nowrap}.ih .info{overflow:hidden}.hr{grid-template-columns:98px 1fr}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head>
 <body>
+<div id="splash"><svg viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="22.5" fill="#7a4de8"/><path d="M54.95 61.96A18.6 18.6 0 1 1 50 33.9" fill="none" stroke="#fff" stroke-width="5.9" stroke-linecap="round"/><path d="M54.2 26.7L45.9 41.1 59.3 39.3z" fill="#fff" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><circle cx="69.5" cy="42.2" r="3.7" fill="#fff"/><circle cx="69.5" cy="57.8" r="3.7" fill="#fff"/></svg><b>re:form</b></div>
 <div id="pg"><main id="app"></main><main id="app2" aria-hidden="true"></main></div>
 <nav class="tabs" id="tabs"></nav>
 <div id="sheet"></div><div id="log"></div>
 <input type="file" id="imp" accept=".json" hidden>
 <script>
-const VER='1.6.0',REL='22 Oct 2026';
+const VER='1.7.0',REL='22 Oct 2026';
 const CHANGES=[
-['1.6.0','Set table with KG / REPS / TIME headers and a tighter layout. Level-up prompts after steady sessions. Function and the target slider removed.'],
-['1.5.0','Weight box beside reps for every set. Party flourish when an exercise is finished.'],
-['1.4.0','Injury history and linked exercises open when you tap an injury. Add exercises while creating an injury. Swiping loops through pages.']];
+['1.7.0','Exercise history and progress charts. Icon badge for exercises left today. Splash shows the app name. Cleaner set headers. Dashboard no longer pages back through weeks.'],
+['1.6.0','Set table with KG / REPS / TIME headers and a tighter layout. Level-up prompts after steady sessions.'],
+['1.5.0','Weight box beside reps for every set. Party flourish when an exercise is finished.']];
 const $=s=>document.querySelector(s),KEY='rehab-data-v1';
 const P={plus:'<path d="M12 5v14M5 12h14"/>',minus:'<path d="M5 12h14"/>',l:'<path d="M15 18l-6-6 6-6"/>',r:'<path d="M9 18l6-6-6-6"/>',dn:'<path d="M6 9l6 6 6-6"/>',
 check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',play:'<path d="M8 5.5v13l11-6.5z"/>',stop:'<rect x="6.5" y="6.5" width="11" height="11" rx="2"/>',
 dash:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',flame:'<path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3.5 2.2-4.5.3 1.3 1 2 1.8 2.3C11 8 10.8 5.5 12 3z"/>',
 inj:'<path d="M2 10h6.5l1.5 2-1.5 2 1.5 2H2"/><path d="M9.4 9.9l6.5-3.7a3 3 0 0 1 3 5.2l-5.2 3-2.3-1 .3-2.5z"/><path d="M15.1 8.9l3.6-2.1M16.1 10.6l3.6-2"/>',
 ex:'<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',
-up:'<path d="M12 19V5M5 12l7-7 7 7"/>',dumb:'<path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/>',party:'<path d="M4 20l4.2-10.8 6.6 6.6z"/><path d="M13.5 6.5l1-1.5M16.5 10l2-.5M17 6.5h.01M19.5 13h.01M12 3.5h.01"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+up:'<path d="M12 19V5M5 12l7-7 7 7"/>',dumb:'<path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/>',hist:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',party:'<path d="M4 20l4.2-10.8 6.6 6.6z"/><path d="M13.5 6.5l1-1.5M16.5 10l2-.5M17 6.5h.01M19.5 13h.01M12 3.5h.01"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
 moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>'};
 const ic=n=>`<svg class="i" viewBox="0 0 24 24">${P[n]}</svg>`;
 let S=JSON.parse(localStorage.getItem(KEY)||'null')||{ex:[],inj:[],logs:{},checks:{}};
@@ -180,10 +194,10 @@ const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+Stri
 const ds=(k,n)=>{const d=new Date(k+'T12:00');d.setDate(d.getDate()+n);return iso(d)};
 const mon=k=>{const d=new Date(k+'T12:00');return ds(k,-((d.getDay()+6)%7))};
 const dl=(k,o)=>new Date(k+'T12:00').toLocaleDateString('en',o);
-const wl=k=>{const a=dl(k,{day:'numeric',month:'short'}),b=dl(ds(k,6),{day:'numeric',month:'short'});return a.split(' ')[1]==b.split(' ')[1]?a.split(' ')[0]+'–'+b:a+' – '+b};
+const wl=k=>{const a=new Date(k+'T12:00'),b=new Date(ds(k,6)+'T12:00'),m=d=>d.toLocaleDateString('en',{month:'short'});return a.getMonth()==b.getMonth()?`${m(a)} ${a.getDate()}–${b.getDate()}`:`${m(a)} ${a.getDate()} – ${m(b)} ${b.getDate()}`};
 const T=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
-const TODAY=iso(new Date()),NOW=mon(TODAY);
-let iopen=null,histOpen=false,pop=null,tab='today',cur=TODAY,wk=NOW,open=null,timer=null,ft='reps',nOpen={};
+let TODAY=iso(new Date()),NOW=mon(TODAY);
+let xopen=null,iopen=null,histOpen=false,pop=null,tab='today',cur=TODAY,wk=NOW,open=null,timer=null,ft='reps',nOpen={};
 const lg=(e,d)=>{const l=(S.logs[e.id]=S.logs[e.id]||{});const x=l[d]=l[d]||{s:[]};while(x.s.length<e.sets)x.s.push({v:null,d:false});return x};
 const rd=(e,d)=>(S.logs[e.id]||{})[d];
 const full=(e,d)=>{const x=rd(e,d);return !!x&&x.s.slice(0,e.sets).filter(s=>s.d).length>=e.sets};
@@ -213,7 +227,7 @@ function render(){
  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.id==tab));
  $('#app').innerHTML=pageHtml(tab);
  if(tab=='today')bindVer();
- pop=null;
+ pop=null;updateBadge();
 }
 const rm=()=>matchMedia('(prefers-reduced-motion:reduce)').matches;
 const LET=['M','T','W','T','F','S','S'];
@@ -229,20 +243,20 @@ function vToday(){
  if(!S.ex.length)return `<div class="empty"><p><b>Let's set up your rehab plan</b></p><p>${S.inj.length?'Now add the exercises you do for it.':'Start with the injury you are working on, then add its exercises.'}</p>${S.inj.length?'':'<button class="btn" data-act="newInj">Add injury</button>'}<button class="btn ${S.inj.length?'':'g'}" data-act="newEx">Add exercise</button></div>`;
  const w=mon(cur),st=wst(w),sk=streak();
  const dn=cur==TODAY?'Today':cur==ds(TODAY,-1)?'Yesterday':dl(cur,{weekday:'long',day:'numeric',month:'short'});
- let h=`<div class="nav"><button data-act="wkn" data-id="-1" aria-label="Previous week">${ic('l')}</button><b>${w==NOW?'This week':'Week of '+wl(w)}</b><button data-act="wkn" data-id="1" ${w>=NOW?'disabled':''} aria-label="Next week">${ic('r')}</button></div>`;
- h+=`<div class="sum" data-act="hist"><div class="top"><span class="stk">${ic('flame')}<strong>${sk}</strong><span>week streak</span></span><span><strong>${st.done}</strong> of ${st.tot} sessions</span></div><div class="cal">${LET.map((l,i)=>{const d=ds(w,i),f=d>TODAY;return `<button class="dy ${dayAct(d)?'a':dayPart(d)?'p':''} ${d==cur?'s':''} ${d==TODAY?'t':''} ${f?'f':''} ${pop&&pop.day==d?'pop':''}" data-act="sel" data-id="${d}" ${f?'disabled':''} aria-label="${dl(d,{weekday:'long',day:'numeric',month:'short'})}"><span>${l}</span><b>${+d.slice(8)}</b></button>`}).join('')}</div><div class="bar"><i style="width:${st.tot?Math.min(100,st.done/st.tot*100):0}%"></i><s></s></div><div class="hint"><span class="hc ${histOpen?'o':''}" id="hc">${ic('dn')}</span></div></div>`;
+ let h='';
+ h+=`<div class="sum" data-act="hist"><div class="top"><span class="stk">${ic('flame')}<strong>${sk}</strong><span>week streak</span></span><span><strong>${st.done}</strong> of ${st.tot} this week</span></div><div class="cal">${LET.map((l,i)=>{const d=ds(w,i),f=d>TODAY;return `<button class="dy ${dayAct(d)?'a':dayPart(d)?'p':''} ${d==cur?'s':''} ${d==TODAY?'t':''} ${f?'f':''} ${pop&&pop.day==d?'pop':''}" data-act="sel" data-id="${d}" ${f?'disabled':''} aria-label="${dl(d,{weekday:'long',day:'numeric',month:'short'})}"><span>${l}</span><b>${+d.slice(8)}</b></button>`}).join('')}</div><div class="bar"><i style="width:${st.tot?Math.min(100,st.done/st.tot*100):0}%"></i><s></s></div><div class="hint"><span class="hc ${histOpen?'o':''}" id="hc">${ic('dn')}</span></div></div>`;
  h+=HIST();
  const due=S.inj.filter(i=>i.status!='Recovered'&&!chk(i.id,w)).length;
  if(due&&w==NOW)h+=`<button class="ban" data-act="tab" data-id="inj"><span>Weekly check-in: ${due} injur${due>1?'ies':'y'} to rate</span>${ic('r')}</button>`;
  h+=`<div class="dh">${dn}</div>`;
- const gs=[...S.inj.map(i=>[i.name,S.ex.filter(e=>e.inj==i.id)]),['Other',S.ex.filter(e=>!S.inj.some(i=>i.id==e.inj))]].filter(g=>g[1].length);
+ const gs=[...S.inj.map(i=>[i.name,S.ex.filter(e=>e.inj==i.id)]),[S.inj.length?'Other':'Exercises',S.ex.filter(e=>!S.inj.some(i=>i.id==e.inj))]].filter(g=>g[1].length);
  gs.forEach(g=>{h+=`<div class="grp">${esc(g[0])}</div>`+g[1].map(e=>{
   const c=wc(e,w),x=rd(e,cur),o=open==e.id,tm=e.type=='time';
   let p='';
-  if(o){const L=lg(e,cur),cl=tm?'g5':'g4';
-   p=`<div class="pn"><div class="sh ${cl}"><span>SET</span><span>${ic('dumb')}KG</span><span>${tm?'TIME (S)':'REPS'}</span>${tm?'<span></span>':''}<span>${ic('check')}</span></div>`+L.s.slice(0,e.sets).map((s,i)=>{const run=timer&&timer.id==e.id&&timer.i==i&&timer.d==cur;
-    return `<div class="set ${cl} ${s.d?'dn':''}"><span class="n">${i+1}</span><input type="number" class="wi" inputmode="decimal" step="0.5" min="0" placeholder="–" value="${(s.w!=null?s.w:e.weight)??''}" data-act="sw" data-id="${e.id}" data-i="${i}" aria-label="Weight in kg"><input type="number" class="ri" inputmode="numeric" min="0" placeholder="${e.reps}" value="${s.v??''}" data-act="sv" data-id="${e.id}" data-i="${i}" aria-label="${tm?'Seconds':'Reps'}">${tm?`<button class="tb ${run?'on':''}" data-act="${run?'stop':'start'}" data-id="${e.id}" data-i="${i}" aria-label="${run?'Stop timer':'Start timer'}">${run?ic('stop')+'<span id="tm">0:00</span>':ic('play')}</button>`:''}<button class="tk ${s.d?'on':''} ${pop&&pop.id==e.id&&pop.i==i?'pop':''}" data-act="tick" data-id="${e.id}" data-i="${i}" aria-label="Done">${ic('check')}</button></div>`}).join('')+LV(e)+`</div>`}
-  return `<div class="ex ${o?'open':''} ${full(e,cur)?'fin':''}"><button class="exh" data-act="tg" data-id="${e.id}"><span class="info"><b>${esc(e.name)}</b><small>${sub(e)}</small></span><span class="dots">${Array.from({length:e.sets},(_,i)=>`<i class="${x&&x.s[i]&&x.s[i].d?'d':''}"></i>`).join('')}</span>${ready(e)?`<span class="up2" aria-label="Ready to level up">${ic('up')}</span>`:''}<span class="cnt ${c>=e.per?'full':''}">${c}/${e.per}</span><span class="chev">${ic('dn')}</span></button>${p}${pop&&pop.fin==e.id?FX():''}</div>`}).join('')});
+  if(o){const L=rd(e,cur)||{s:[]},cl=tm?'g5':'g4';
+   p=`<div class="pn"><div class="sh ${cl}"><span>SET</span><span>${ic('dumb')}KG</span><span>${tm?'TIME (S)':'REPS'}</span>${tm?'<span></span>':''}<span>${ic('check')}</span></div>`+Array.from({length:e.sets},(_,i)=>L.s[i]||{v:null,d:false}).map((s,i)=>{const run=timer&&timer.id==e.id&&timer.i==i&&timer.d==cur;
+    return `<div class="set ${cl} ${s.d?'dn':''}"><span class="n">${i+1}</span><input type="number" class="wi" inputmode="decimal" step="0.5" min="0" placeholder="–" value="${(s.w!=null?s.w:e.weight)??''}" data-act="sw" data-id="${e.id}" data-i="${i}" aria-label="Weight in kg"><input type="number" class="ri" inputmode="numeric" min="0" placeholder="${e.reps}" value="${s.v??''}" data-act="sv" data-id="${e.id}" data-i="${i}" aria-label="${tm?'Seconds':'Reps'}">${tm?`<button class="tb ${run?'on':''}" data-act="${run?'stop':'start'}" data-id="${e.id}" data-i="${i}" aria-label="${run?'Stop timer':'Start timer'}">${run?ic('stop')+'<span id="tm">0:00</span>':ic('play')}</button>`:''}<button class="tk ${s.d?'on':''} ${pop&&pop.id==e.id&&pop.i==i?'pop':''}" data-act="tick" data-id="${e.id}" data-i="${i}" aria-label="Done">${ic('check')}</button></div>`}).join('')+LV(e)+XA(e)+`</div>`}
+  return `<div class="ex ${o?'open':''} ${full(e,cur)?'fin':''}"><button class="exh" data-act="tg" data-id="${e.id}"><span class="info"><b>${esc(e.name)}</b><small>${sub(e)}</small></span><span class="dots">${Array.from({length:e.sets},(_,i)=>`<i class="${x&&x.s[i]&&x.s[i].d?'d':''}"></i>`).join('')}</span>${ready(e)?`<span class="up2" aria-label="Ready to level up">${ic('up')}</span>`:''}<span class="cnt ${c>=e.per?'full':''}">${Math.min(c,e.per)}/${e.per}</span><span class="chev">${ic('dn')}</span></button>${p}${pop&&pop.fin==e.id?FX():''}</div>`}).join('')});
  return h;
 }
 function spark(id){
@@ -251,9 +265,26 @@ function spark(id){
  return `<svg viewBox="0 0 ${W} ${H}"><polyline points="${pts}" fill="none" stroke="var(--ac)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 }
 function since(s){if(!s)return 'No start date';const d=Math.max(0,Math.floor((new Date(TODAY+'T12:00')-new Date(s+'T12:00'))/864e5));return 'Since '+dl(s,{day:'numeric',month:'short'})+' · '+(d<14?d+' d':Math.floor(d/7)+' wks')}
+const fv=n=>+(+n).toFixed(1);
+function prog(e){const L=S.logs[e.id]||{},pts=[];
+ Object.keys(L).sort().forEach(d=>{const dn=L[d].s.slice(0,e.sets).filter(s=>s.d);if(!dn.length)return;pts.push({d,w:Math.max(0,...dn.map(s=>s.w||0)),v:Math.max(0,...dn.map(s=>s.v||0))})});
+ const u=pts.some(q=>q.w>0)?'kg':e.type=='time'?'sec':'reps';return{u,pts:pts.map(q=>({d:q.d,y:u=='kg'?q.w:q.v}))}}
+const chart=(pts,W,H,big)=>{if(pts.length<2)return '';const ys=pts.map(q=>q.y),mn=Math.min(...ys),mx=Math.max(...ys),r=mx-mn;
+ const xy=pts.map((q,i)=>[4+i/(pts.length-1)*(W-8),r?H-4-(q.y-mn)/r*(H-8):H/2]),z=xy[xy.length-1];
+ return `<svg viewBox="0 0 ${W} ${H}" ${big?'preserveAspectRatio="none"':`width="${W}" height="${H}"`}><polyline points="${xy.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ')}" fill="none" stroke="var(--ac)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${big?'vector-effect="non-scaling-stroke"':''}/>${big?'':`<circle cx="${z[0].toFixed(1)}" cy="${z[1].toFixed(1)}" r="2.8" fill="var(--ac)"/>`}</svg>`};
+const XA=e=>`<div class="xa"><button data-act="hx" data-id="${e.id}">${ic('hist')}History</button><button data-act="editEx" data-id="${e.id}">${ic('edit')}Edit</button></div>`;
+const XL=e=>{const p=prog(e),a=p.pts[0],z=p.pts[p.pts.length-1];return `<button class="xl" data-act="hx" data-id="${e.id}"><span class="xn2"><b>${esc(e.name)}</b><small>${sub(e)} · ${e.per}×/wk</small></span><span class="xc">${p.pts.length>1?chart(p.pts,64,22)+`<small>${fv(a.y)} → ${fv(z.y)} ${p.u}</small>`:'<small>No trend yet</small>'}</span></button>`};
+function hxSheet(id){const e=S.ex.find(x=>x.id==id);if(!e)return;const L=S.logs[id]||{},p=prog(e),t=e.type=='time';
+ const days=Object.keys(L).filter(d=>L[d].s.some(s=>s.d)).sort().reverse().slice(0,20);
+ const row=d=>{const st=L[d].s.filter(s=>s.d).map(s=>`${s.w?fv(s.w)+' kg × ':''}${s.v}${t?' s':''}`),same=st.every(x=>x==st[0]);return `<div class="hh2"><span>${dl(d,{weekday:'short',day:'numeric',month:'short'})}</span><span>${same&&st.length>1?st.length+' × '+st[0]:st.join(' · ')}</span></div>`};
+ sheet(`<h2>${esc(e.name)}</h2>`+(p.pts.length>1?`<div class="hxs">${chart(p.pts,300,60,1)}<div class="mut">${fv(p.pts[0].y)} → ${fv(p.pts[p.pts.length-1].y)} ${p.u} over ${p.pts.length} sessions</div></div>`:'<div class="mut" style="margin-bottom:8px">A trend chart appears after two sessions.</div>')+(days.length?days.map(row).join(''):'<div class="mut">No sessions logged yet.</div>')+`<div class="acts"><button class="btn g" data-act="editEx" data-id="${id}">Edit exercise</button></div>`)}
+let badgeOn=localStorage.getItem('rehab-badge')!='0';
+const outstanding=()=>S.ex.filter(e=>!full(e,TODAY)&&wc(e,NOW)<e.per).length;
+function updateBadge(){if(!('setAppBadge' in navigator))return;try{const n=badgeOn?outstanding():0;(n?navigator.setAppBadge(n):navigator.clearAppBadge()).catch(()=>{})}catch(e){}}
+const BDG=()=>'setAppBadge' in navigator?`<div class="bd"><span>Icon badge for exercises left today</span><button id="bdg" class="sw ${badgeOn?'on':''}" data-act="bdg" aria-label="Toggle icon badge"><i></i></button></div>`:'';
 function ipanel(i){
  const xs=S.ex.filter(e=>e.inj==i.id),ks=Object.keys(S.checks[i.id]||{}).sort().reverse().slice(0,12);
- return `<div class="ip"><div class="grp">Exercises</div>`+(xs.length?xs.map(e=>`<button class="xl" data-act="editEx" data-id="${e.id}"><span>${esc(e.name)}</span><small>${sub(e)} · ${e.per}×/wk</small></button>`).join(''):`<div class="mut">No exercises linked yet.</div>`)+
+ return `<div class="ip"><div class="grp">Exercises &amp; progress</div>`+(xs.length?xs.map(XL).join(''):`<div class="mut">No exercises linked yet.</div>`)+
  `<button class="lk" data-act="newExI" data-id="${i.id}">+ Add exercise</button><div class="grp">History</div>`+
  (ks.length?`<div class="hr hh"><span></span><span>Pain</span></div>`+ks.map(k=>{const c=S.checks[i.id][k];return `<div class="hr"><span>${wl(k)}</span><span class="mb pb"><b>${c.pain}</b><s style="--w:${c.pain*10}%"></s></span>${c.note?`<small class="hn">${esc(c.note)}</small>`:''}</div>`}).join(''):`<div class="mut">No check-ins yet.</div>`)+
  `<button class="lk" data-act="editInj" data-id="${i.id}">Edit injury</button></div>`;
@@ -267,13 +298,13 @@ function vInj(){
   let d='Not logged this week';if(c){d='Logged';if(pv){const x=c.pain-pv.pain;d=x==0?'Pain unchanged':`<span class="${x<0?'up':'dn'}">Pain ${x<0?'down':'up'} ${Math.abs(x)}</span> vs last check-in`}}
   h+=`<div class="ic ${o?'open':''}"><div class="ih"><button class="info" data-act="itg" data-id="${i.id}"><b>${esc(i.name)}</b><small>${since(i.start)}</small></button><span class="sp" id="s${i.id}">${spark(i.id)}</span><select data-act="status" data-id="${i.id}" aria-label="Status">${STAT.map(s=>`<option ${i.status==s?'selected':''}>${s}</option>`).join('')}</select><button class="chev" data-act="itg" data-id="${i.id}" aria-label="Show details">${ic('dn')}</button></div>
   <div class="sg ${c?'':'dim'}" id="c${i.id}"><div class="sl"><label>Pain <span id="p${i.id}">${p}/10</span></label><input type="range" min="0" max="10" value="${p}" data-act="pain" data-id="${i.id}"></div></div>
-  <div class="ft"><span>${d}</span>${c&&c.note||nOpen[i.id]?`<input type="text" placeholder="Note" value="${esc(c?.note)}" data-act="note" data-id="${i.id}">`:`<button data-act="nt" data-id="${i.id}">+ Note</button>`}</div>${o?ipanel(i):''}</div>`});
+  <div class="ft"><span id="dt${i.id}">${d}</span>${c&&c.note||nOpen[i.id]?`<input type="text" placeholder="Note" value="${esc(c?.note)}" data-act="note" data-id="${i.id}">`:`<button data-act="nt" data-id="${i.id}">+ Note</button>`}</div>${o?ipanel(i):''}</div>`});
  return h+`<button class="add" data-act="newInj">${ic('plus')} Add injury</button>`;
 }
 function vEx(){
  let h='';
  if(!S.ex.length)h+=`<div class="empty"><p>Your routine is empty.</p></div>`;
- S.ex.forEach(e=>{const i=S.inj.find(x=>x.id==e.inj);h+=`<div class="row"><button class="info" data-act="editEx" data-id="${e.id}"><b>${esc(e.name)}</b><small>${sub(e)} · ${e.per}×/week${i?' · '+esc(i.name):''}</small></button><span style="color:var(--mut)">${ic('r')}</span></div>`});
+ S.ex.forEach(e=>{const i=S.inj.find(x=>x.id==e.inj),o=xopen==e.id;h+=`<div class="ex ${o?'open':''}"><button class="exh" data-act="xtg" data-id="${e.id}"><span class="info"><b>${esc(e.name)}</b><small>${sub(e)} · ${e.per}×/week${i?' · '+esc(i.name):''}</small></span><span class="chev">${ic('dn')}</span></button>${o?`<div class="pn">${e.notes?`<div class="mut" style="padding:8px 0 0">${esc(e.notes)}</div>`:''}${XA(e)}</div>`:''}</div>`});
  return h+`<button class="add" data-act="newEx">${ic('plus')} Add exercise</button>`;
 }
 function sheet(h){const s=$('#sheet');s.innerHTML=`<div class="bk" data-act="close"></div><div class="pan">${h}</div>`;s.classList.add('on')}
@@ -295,10 +326,10 @@ function injForm(id){
  ${id?'':`<div class="grp" style="margin:16px 2px 8px">Exercises (optional)</div><div id="xr"></div><button class="add" data-act="addrow" style="margin-bottom:4px">${ic('plus')} Add exercise</button>`}
  <div class="acts">${id?`<button class="btn d" data-act="delInj" data-id="${id}">Delete</button>`:''}<button class="btn" data-act="saveInj" data-id="${id||''}">Save</button></div>`);
 }
-function setChk(id,k,v){const c=(S.checks[id]=S.checks[id]||{});const o=c[wk]||{pain:+$('#c'+id+' input[data-act=pain]').value,note:''};o[k]=v;c[wk]=o;save();$('#c'+id).classList.remove('dim')}
+function setChk(id,k,v){const c=(S.checks[id]=S.checks[id]||{});const o=c[wk]||{pain:+$('#c'+id+' input[data-act=pain]').value,note:''};o[k]=v;c[wk]=o;save();$('#c'+id).classList.remove('dim');const dt=$('#dt'+id);if(dt&&dt.textContent.startsWith('Not logged'))dt.textContent='Logged'}
 function openLog(){
  const t=document.documentElement.dataset.theme;
- $('#log').innerHTML=`<div class="bk" data-act="close"></div><div class="pan"><div class="lh"><h2>What's new</h2><button id="thm" data-act="tgl" aria-label="Switch light or dark mode">${ic(t=='dark'?'moon':'sun')}</button></div>`+CHANGES.map((c,n)=>`<div class="cv">v${c[0]}${n==0?`<span>${REL}</span>`:''}</div><p class="cp">${c[1]}</p>`).join('')+`<div class="acts"><button class="btn g s" data-act="exp">Back up</button><button class="btn g s" data-act="imp">Restore</button></div></div>`;
+ $('#log').innerHTML=`<div class="bk" data-act="close"></div><div class="pan"><div class="lh"><h2>What's new</h2><button id="thm" data-act="tgl" aria-label="Switch light or dark mode">${ic(t=='dark'?'moon':'sun')}</button></div>`+CHANGES.map((c,n)=>`<div class="cv">v${c[0]}${n==0?`<span>${REL}</span>`:''}</div><p class="cp">${c[1]}</p>`).join('')+`${BDG()}<div class="acts"><button class="btn g s" data-act="exp">Back up</button><button class="btn g s" data-act="imp">Restore</button></div></div>`;
  $('#log').classList.add('on');
 }
 function bindVer(){const v=$('#ver');let t;const s=()=>{t=setTimeout(()=>{t=0;openLog()},500)},c=()=>clearTimeout(t);
@@ -312,7 +343,6 @@ document.addEventListener('click',e=>{
  if(a=='tab'){if(id==tab)return;const d=Math.sign(ORDER.indexOf(id)-ORDER.indexOf(tab));tab=id;render();scrollTo(0,0);if(!rm())$('#app').animate([{transform:`translateX(${d*36}px)`,opacity:0},{transform:'none',opacity:1}],{duration:280,easing:'cubic-bezier(.22,.8,.3,1)'});return}
  if(a=='hist'){histOpen=!histOpen;$('#hx').classList.toggle('on',histOpen);$('#hc').classList.toggle('o',histOpen);return}
  if(a=='sel'){cur=id;open=null;return render()}
- if(a=='wkn'){let n=ds(cur,7*+id);if(n>TODAY)n=TODAY;if(mon(n)<=NOW){cur=n;open=null;render()}return}
  if(a=='wk'){const n=ds(wk,7*+id);if(n<=NOW){wk=n;render()}return}
  if(a=='tg'){open=open==id?null:id;return render()}
  if(a=='tick'){const be=dayAct(cur),bf=full(ex,cur),L=lg(ex,cur),s=L.s[i];s.d=!s.d;if(s.d){if(s.v==null||s.v==='')s.v=ex.reps;if(s.w==null)s.w=ex.weight;L.tg=ex.reps}else s.w=null;save();if(s.d)pop={id,i,day:!be&&dayAct(cur)?cur:null,fin:!bf&&full(ex,cur)?id:null};return render()}
@@ -321,6 +351,10 @@ document.addEventListener('click',e=>{
  if(a=='wu'||a=='wd'){ex.weight=Math.max(0,+((ex.weight||0)+(a=='wu'?2.5:-2.5)).toFixed(1))||null;ex.wh=ex.wh.filter(h=>h.d!=cur);ex.wh.push({d:cur,w:ex.weight});save();return render()}
  if(a=='lvl'){if(b.dataset.m=='w'){ex.weight=+((ex.weight||0)+2.5).toFixed(1);ex.wh=ex.wh.filter(h=>h.d!=cur);ex.wh.push({d:cur,w:ex.weight})}else ex.reps+=ex.type=='time'?5:1;ex.snz=null;const x=rd(ex,cur);if(x)x.s.forEach(q=>{if(!q.d)q.w=null});save();return render()}
  if(a=='snz'){const l=lvl(ex);ex.snz={k:l.key,n:l.n};save();return render()}
+ if(a=='hx')return hxSheet(id);
+ if(a=='xtg'){xopen=xopen==id?null:id;return render()}
+ if(a=='pain'){setChk(id,'pain',+b.value);$('#s'+id).innerHTML=spark(id);return}
+ if(a=='bdg'){badgeOn=!badgeOn;localStorage.setItem('rehab-badge',badgeOn?'1':'0');b.classList.toggle('on',badgeOn);if(badgeOn&&window.Notification&&Notification.permission=='default')Notification.requestPermission().then(updateBadge).catch(()=>{});updateBadge();return}
  if(a=='nt'){nOpen[id]=1;return render()}
  if(a=='itg'){iopen=iopen==id?null:id;return render()}
  if(a=='newExI')return exForm(null,id);
@@ -383,5 +417,8 @@ pg.addEventListener('touchmove',e=>{
 },{passive:true});
 pg.addEventListener('touchend',()=>swEnd(false));
 pg.addEventListener('touchcancel',()=>swEnd(true));
+function refreshDay(){const nd=iso(new Date());if(nd!=TODAY){TODAY=nd;NOW=mon(nd);cur=TODAY;wk=NOW}render()}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshDay()});
+setTimeout(()=>{const sp=$('#splash');if(sp){sp.classList.add('off');setTimeout(()=>sp.remove(),500)}},750);
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script></body></html>
