@@ -173,6 +173,8 @@ main{padding-top:8px}.nav{margin-bottom:8px}.nav button{width:36px;height:36px}
 @keyframes sdp{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
 @keyframes sfi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 .bdp{display:block;margin:18px auto 0;font-size:13px;color:var(--ac);font-weight:600;padding:8px 14px;border-radius:99px;background:var(--acs)}.bdp+#ver{margin-top:8px}.bd small{font-size:12px}
+.sn{margin-top:14px}.sn label{display:block;font-size:12px;color:var(--mut);margin-bottom:4px}.sn input{width:100%;padding:9px 10px;font-size:16px;border-radius:10px;background:var(--bg);border:1px solid var(--ln);outline:0}.sn input:focus{border-color:var(--ac)}.syr{display:flex;gap:8px;margin-top:8px}.sn small{display:block;margin-top:6px;color:var(--mut);font-size:12px}.sy{text-align:center;font-size:11px;color:var(--mut);margin-top:-2px;min-height:14px}
+.dh{display:flex;align-items:center;justify-content:space-between}.dh .lk{padding:0;font-size:13px}.hxh{display:flex;align-items:center;justify-content:space-between;gap:8px}.hxh .grp{margin:12px 4px 4px}.jd{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mut);margin-top:6px}.jd input{width:auto;padding:5px 8px;font-size:14px;border-radius:8px;background:var(--bg);border:1px solid var(--ln);color:var(--tx)}.wdh{display:flex;align-items:center;justify-content:space-between;margin:12px 0 2px}.wd .wdh b{display:inline;margin:0}.wdh button{color:var(--ac);font-size:13px;font-weight:600;padding:2px 0}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head>
 <body>
@@ -182,11 +184,11 @@ main{padding-top:8px}.nav{margin-bottom:8px}.nav button{width:36px;height:36px}
 <div id="sheet"></div><div id="log"></div>
 <input type="file" id="imp" accept=".json" hidden>
 <script>
-const VER='1.8.1',REL='22 Oct 2026';
+const VER='1.10.0',REL='10 Nov 2026';
 const CHANGES=[
-['1.8.1','Icon badge now works on Android through a notification. Simpler first-dot animation on the splash.'],
-['1.8.0','Animated splash. Past days list only what you logged. Tap a week in the 6-week view for details. Clearer exercise history and charts.'],
-['1.7.0','Exercise history and progress charts. Icon badge for exercises left today. Cleaner set headers.']];
+['1.10.0','Log exercises on any past day: pick a date, or tap a week and "+ Log". New Tick all button and Back to today.'],
+['1.9.0','Google Sheet sync that merges edits from every device, with daily backups in your sheet.'],
+['1.8.1','Icon badge now works on Android through a notification. Simpler first-dot animation on the splash.']];
 const $=s=>document.querySelector(s),KEY='rehab-data-v1';
 const P={plus:'<path d="M12 5v14M5 12h14"/>',minus:'<path d="M5 12h14"/>',l:'<path d="M15 18l-6-6 6-6"/>',r:'<path d="M9 18l6-6-6-6"/>',dn:'<path d="M6 9l6 6 6-6"/>',
 check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',play:'<path d="M8 5.5v13l11-6.5z"/>',stop:'<rect x="6.5" y="6.5" width="11" height="11" rx="2"/>',
@@ -197,10 +199,10 @@ up:'<path d="M12 19V5M5 12l7-7 7 7"/>',dumb:'<path d="M6.5 6.5v11M17.5 6.5v11M3.
 moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>'};
 const ic=n=>`<svg class="i" viewBox="0 0 24 24">${P[n]}</svg>`;
 let S=JSON.parse(localStorage.getItem(KEY)||'null')||{ex:[],inj:[],logs:{},checks:{}};
-function mig(){S.ex.forEach(e=>{e.type=e.type||'reps';if(e.weight===undefined)e.weight=null;e.wh=e.wh||[];e.prog=e.prog||'main';e.b=e.b||{}});S.inj.forEach(i=>i.start=i.start||'');
+function mig(){S.tomb=S.tomb||{};S.ex.forEach(e=>{e.type=e.type||'reps';if(e.weight===undefined)e.weight=null;e.wh=e.wh||[];e.prog=e.prog||'main';e.b=e.b||{}});S.inj.forEach(i=>i.start=i.start||'');
  Object.keys(S.logs).forEach(id=>Object.keys(S.logs[id]).forEach(k=>{if(typeof S.logs[id][k]!='object')delete S.logs[id][k]}))}
 mig();
-const save=()=>localStorage.setItem(KEY,JSON.stringify(S));
+function save(){stamp();localStorage.setItem(KEY,JSON.stringify(S));schedule()}
 const uid=()=>Math.random().toString(36).slice(2,9);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -233,7 +235,7 @@ function theme(t){if(t)localStorage.setItem('rehab-theme',t);const v=localStorag
 theme();
 
 const ORDER=['today','inj','ex'];
-const pageHtml=t=>({today:vToday,inj:vInj,ex:vEx})[t]()+(t=='today'?BDP()+`<button id="ver">v${VER}</button>`:'');
+const pageHtml=t=>({today:vToday,inj:vInj,ex:vEx})[t]()+(t=='today'?BSY()+BDP()+`<button id="ver">v${VER}</button><div id="sy" class="sy">${syTxt()}</div>`:'');
 const TABS=[['today','Dashboard','dash'],['inj','Injuries','inj'],['ex','Exercises','ex']];
 $('#tabs').innerHTML=TABS.map(t=>`<button data-act="tab" data-id="${t[0]}">${ic(t[2])}${t[1]}</button>`).join('');
 function render(){
@@ -248,7 +250,7 @@ const dayAct=d=>S.ex.some(e=>full(e,d)),dayPart=d=>S.ex.some(e=>{const x=rd(e,d)
 const wst=w=>{let tot=0,done=0;S.ex.forEach(e=>{tot+=e.per;done+=Math.min(e.per,wc(e,w))});return{tot,done,met:tot>0&&done/tot>=.75}};
 function streak(){let w=NOW,n=0;if(!wst(w).met)w=ds(w,-7);while(n<260&&wst(w).met){n++;w=ds(w,-7)}return n}
 function HIST(){
- let h=`<div class="hx ${histOpen?'on':''}" id="hx"><div><div class="grp" style="margin-top:2px">Last 6 weeks</div><div class="card hm"><span></span>${LET.map(l=>`<em>${l}</em>`).join('')}<span></span>`;
+ let h=`<div class="hx ${histOpen?'on':''}" id="hx"><div><div class="hxh"><span class="grp">Last 6 weeks</span><label class="jd">Go to date <input type="date" max="${TODAY}" data-act="jump" aria-label="Go to date"></label></div><div class="card hm"><span></span>${LET.map(l=>`<em>${l}</em>`).join('')}<span></span>`;
  for(let k=5;k>=0;k--){const ws=ds(NOW,-7*k),m=wst(ws).met;const W=`data-act="wkv" data-id="${ws}"`;h+=`<span class="wl" ${W}>${dl(ws,{day:'numeric',month:'short'})}</span>`+LET.map((_,i)=>{const d=ds(ws,i);return `<i ${W} class="${dayAct(d)?'a':dayPart(d)?'p':''} ${d>TODAY?'f':''}"></i>`}).join('')+`<span ${W} class="wm ${m?'m':''}">${m?ic('check'):''}</span>`}
  return h+'</div></div></div>';
 }
@@ -257,11 +259,11 @@ function vToday(){
  const w=mon(cur),st=wst(w),sk=streak();
  const dn=cur==TODAY?'Today':cur==ds(TODAY,-1)?'Yesterday':dl(cur,{weekday:'long',day:'numeric',month:'short'});
  let h='';
- h+=`<div class="sum" data-act="hist"><div class="top"><span class="stk">${ic('flame')}<strong>${sk}</strong><span>week streak</span></span><span><strong>${st.done}</strong> of ${st.tot} this week</span></div><div class="cal">${LET.map((l,i)=>{const d=ds(w,i),f=d>TODAY;return `<button class="dy ${dayAct(d)?'a':dayPart(d)?'p':''} ${d==cur?'s':''} ${d==TODAY?'t':''} ${f?'f':''} ${pop&&pop.day==d?'pop':''}" data-act="sel" data-id="${d}" ${f?'disabled':''} aria-label="${dl(d,{weekday:'long',day:'numeric',month:'short'})}"><span>${l}</span><b>${+d.slice(8)}</b></button>`}).join('')}</div><div class="bar"><i style="width:${st.tot?Math.min(100,st.done/st.tot*100):0}%"></i><s></s></div><div class="hint"><span class="hc ${histOpen?'o':''}" id="hc">${ic('dn')}</span></div></div>`;
+ h+=`<div class="sum" data-act="hist"><div class="top"><span class="stk">${ic('flame')}<strong>${sk}</strong><span>week streak</span></span><span><strong>${st.done}</strong> of ${st.tot} ${w==NOW?'this week':wl(w)}</span></div><div class="cal">${LET.map((l,i)=>{const d=ds(w,i),f=d>TODAY;return `<button class="dy ${dayAct(d)?'a':dayPart(d)?'p':''} ${d==cur?'s':''} ${d==TODAY?'t':''} ${f?'f':''} ${pop&&pop.day==d?'pop':''}" data-act="sel" data-id="${d}" ${f?'disabled':''} aria-label="${dl(d,{weekday:'long',day:'numeric',month:'short'})}"><span>${l}</span><b>${+d.slice(8)}</b></button>`}).join('')}</div><div class="bar"><i style="width:${st.tot?Math.min(100,st.done/st.tot*100):0}%"></i><s></s></div><div class="hint"><span class="hc ${histOpen?'o':''}" id="hc">${ic('dn')}</span></div></div>`;
  h+=HIST();
  const due=S.inj.filter(i=>i.status!='Recovered'&&!chk(i.id,w)).length;
  if(due&&w==NOW)h+=`<button class="ban" data-act="tab" data-id="inj"><span>Weekly check-in: ${due} injur${due>1?'ies':'y'} to rate</span>${ic('r')}</button>`;
- h+=`<div class="dh">${dn}</div>`;
+ h+=`<div class="dh"><span>${dn}</span>${cur!=TODAY?`<button class="lk" data-act="tdy">Back to today</button>`:''}</div>`;
  const past=cur<TODAY,exs=past&&!pastAll?S.ex.filter(e=>{const x=rd(e,cur);return x&&x.s.slice(0,e.sets).some(q=>q.d)}):S.ex;
  const gs=[...S.inj.map(i=>[i.name,exs.filter(e=>e.inj==i.id)]),[S.inj.length?'Other':'Exercises',exs.filter(e=>!S.inj.some(i=>i.id==e.inj))]].filter(g=>g[1].length);
  gs.forEach(g=>{h+=`<div class="grp">${esc(g[0])}</div>`+g[1].map(e=>{
@@ -269,7 +271,7 @@ function vToday(){
   let p='';
   if(o){const L=rd(e,cur)||{s:[]},cl=tm?'g5':'g4';
    p=`<div class="pn"><div class="sh ${cl}"><span>SET</span><span>${ic('dumb')}KG</span><span>${tm?'TIME (S)':'REPS'}</span>${tm?'<span></span>':''}<span>${ic('check')}</span></div>`+Array.from({length:e.sets},(_,i)=>L.s[i]||{v:null,d:false}).map((s,i)=>{const run=timer&&timer.id==e.id&&timer.i==i&&timer.d==cur;
-    return `<div class="set ${cl} ${s.d?'dn':''}"><span class="n">${i+1}</span><input type="number" class="wi" inputmode="decimal" step="0.5" min="0" placeholder="–" value="${(s.w!=null?s.w:e.weight)??''}" data-act="sw" data-id="${e.id}" data-i="${i}" aria-label="Weight in kg"><input type="number" class="ri" inputmode="numeric" min="0" placeholder="${e.reps}" value="${s.v??''}" data-act="sv" data-id="${e.id}" data-i="${i}" aria-label="${tm?'Seconds':'Reps'}">${tm?`<button class="tb ${run?'on':''}" data-act="${run?'stop':'start'}" data-id="${e.id}" data-i="${i}" aria-label="${run?'Stop timer':'Start timer'}">${run?ic('stop')+'<span id="tm">0:00</span>':ic('play')}</button>`:''}<button class="tk ${s.d?'on':''} ${pop&&pop.id==e.id&&pop.i==i?'pop':''}" data-act="tick" data-id="${e.id}" data-i="${i}" aria-label="Done">${ic('check')}</button></div>`}).join('')+LV(e)+XA(e)+`</div>`}
+    return `<div class="set ${cl} ${s.d?'dn':''}"><span class="n">${i+1}</span><input type="number" class="wi" inputmode="decimal" step="0.5" min="0" placeholder="–" value="${(s.w!=null?s.w:e.weight)??''}" data-act="sw" data-id="${e.id}" data-i="${i}" aria-label="Weight in kg"><input type="number" class="ri" inputmode="numeric" min="0" placeholder="${e.reps}" value="${s.v??''}" data-act="sv" data-id="${e.id}" data-i="${i}" aria-label="${tm?'Seconds':'Reps'}">${tm?`<button class="tb ${run?'on':''}" data-act="${run?'stop':'start'}" data-id="${e.id}" data-i="${i}" aria-label="${run?'Stop timer':'Start timer'}">${run?ic('stop')+'<span id="tm">0:00</span>':ic('play')}</button>`:''}<button class="tk ${s.d?'on':''} ${pop&&pop.id==e.id&&pop.i==i?'pop':''}" data-act="tick" data-id="${e.id}" data-i="${i}" aria-label="Done">${ic('check')}</button></div>`}).join('')+LV(e)+XA(e,1)+`</div>`}
   return `<div class="ex ${o?'open':''} ${full(e,cur)?'fin':''}"><button class="exh" data-act="tg" data-id="${e.id}"><span class="info"><b>${esc(e.name)}</b><small>${sub(e)}</small></span><span class="dots">${Array.from({length:e.sets},(_,i)=>`<i class="${x&&x.s[i]&&x.s[i].d?'d':''}"></i>`).join('')}</span>${ready(e)?`<span class="up2" aria-label="Ready to level up">${ic('up')}</span>`:''}<span class="cnt ${c>=e.per?'full':''}">${Math.min(c,e.per)}/${e.per}</span><span class="chev">${ic('dn')}</span></button>${p}${pop&&pop.fin==e.id?FX():''}</div>`}).join('')});
  if(past)h+=(exs.length?'':`<div class="mut" style="padding:10px 4px">No exercises logged on this day.</div>`)+`<button class="lk" data-act="pall">${pastAll?'Hide exercises not logged':'+ Log a missed exercise'}</button>`;
  return h;
@@ -292,16 +294,62 @@ function prog(e){const L=S.logs[e.id]||{},pts=[];
 const chart=(pts,W,H,big)=>{if(pts.length<2)return '';const ys=pts.map(q=>q.y),mn=Math.min(...ys),mx=Math.max(...ys),r=mx-mn;
  const xy=pts.map((q,i)=>[4+i/(pts.length-1)*(W-8),r?H-4-(q.y-mn)/r*(H-8):H/2]),z=xy[xy.length-1];
  return `<svg viewBox="0 0 ${W} ${H}" ${big?'preserveAspectRatio="none"':`width="${W}" height="${H}"`}><polyline points="${xy.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ')}" fill="none" stroke="var(--ac)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${big?'vector-effect="non-scaling-stroke"':''}/>${big?'':`<circle cx="${z[0].toFixed(1)}" cy="${z[1].toFixed(1)}" r="2.8" fill="var(--ac)"/>`}</svg>`};
-const XA=e=>`<div class="xa"><button data-act="hx" data-id="${e.id}">${ic('hist')}History</button><button data-act="editEx" data-id="${e.id}">${ic('edit')}Edit</button></div>`;
+const XA=(e,t)=>`<div class="xa">${t&&!full(e,cur)?`<button data-act="tickall" data-id="${e.id}">${ic('check')}Tick all</button>`:''}<button data-act="hx" data-id="${e.id}">${ic('hist')}History</button><button data-act="editEx" data-id="${e.id}">${ic('edit')}Edit</button></div>`;
 const XL=e=>{const p=prog(e),n=p.pts.length;return `<button class="xl" data-act="hx" data-id="${e.id}"><span class="xn2"><b>${esc(e.name)}</b><small>${sub(e)} · ${e.per}×/wk</small></span><span class="xc">${n>2?chart(p.pts,64,22)+`<small>${fv(p.pts[0].y)} → ${fv(p.pts[n-1].y)} ${p.u}</small>`:'<small>No trend yet</small>'}</span></button>`};
 function hxSheet(id){const e=S.ex.find(x=>x.id==id);if(!e)return;const L=S.logs[id]||{},p=prog(e),n=p.pts.length;
  const days=Object.keys(L).filter(d=>L[d].s.slice(0,e.sets).some(q=>q.d)).sort().reverse().slice(0,20);
  const row=d=>`<div class="hh2"><span>${dl(d,{weekday:'short',day:'numeric',month:'short'})}</span><span>${setsStr(e,L[d].s.slice(0,e.sets).filter(q=>q.d))}</span></div>`;
  sheet(`<h2>${esc(e.name)}</h2>`+(n>2?`<div class="hxs">${chart(p.pts,300,60,1)}<div class="mut">${p.lab}: ${fv(p.pts[0].y)} → ${fv(p.pts[n-1].y)} ${p.u} · ${n} sessions</div></div>`:`<div class="mut" style="margin-bottom:8px">Trend chart appears after 3 sessions.</div>`)+(days.length?days.map(row).join(''):'<div class="mut">No sessions logged yet.</div>')+`<div class="acts"><button class="btn g" data-act="editEx" data-id="${id}">Edit exercise</button></div>`)}
 function wkSheet(ws){const st=wst(ws);let body='';
- for(let i=0;i<7;i++){const d=ds(ws,i),xs=S.ex.map(e=>({e,x:rd(e,d)})).filter(o=>o.x&&o.x.s.slice(0,o.e.sets).some(q=>q.d));if(!xs.length)continue;
-  body+=`<div class="wd"><b>${dl(d,{weekday:'long',day:'numeric',month:'short'})}</b>`+xs.map(o=>`<div class="hh2"><span>${esc(o.e.name)}</span><span>${setsStr(o.e,o.x.s.slice(0,o.e.sets).filter(q=>q.d))}</span></div>`).join('')+`</div>`}
- sheet(`<h2>${wl(ws)}</h2><div class="mut" style="margin-bottom:4px">${st.done} of ${st.tot} sessions${st.met?' · goal met':''}</div>`+(body||'<div class="mut" style="padding-top:8px">No exercises logged this week.</div>'))}
+ for(let i=0;i<7;i++){const d=ds(ws,i);if(d>TODAY)break;const xs=S.ex.map(e=>({e,x:rd(e,d)})).filter(o=>o.x&&o.x.s.slice(0,o.e.sets).some(q=>q.d));
+  body+=`<div class="wd"><div class="wdh"><b>${dl(d,{weekday:'long',day:'numeric',month:'short'})}</b><button data-act="logday" data-id="${d}">+ Log</button></div>`+(xs.length?xs.map(o=>`<div class="hh2"><span>${esc(o.e.name)}</span><span>${setsStr(o.e,o.x.s.slice(0,o.e.sets).filter(q=>q.d))}</span></div>`).join(''):`<div class="mut" style="padding:0 0 2px">Nothing logged</div>`)+`</div>`}
+ sheet(`<h2>${wl(ws)}</h2><div class="mut" style="margin-bottom:4px">${st.done} of ${st.tot} sessions${st.met?' · goal met':''}</div>`+body)}
+(function(){const m=location.hash.match(/sync=([^&]+)/);if(m){try{localStorage.setItem('rehab-sync-url',decodeURIComponent(m[1]))}catch(e){}history.replaceState(null,'',location.pathname+location.search)}})();
+const SYK='rehab-sync-url',SYT='rehab-sync-last',jr=(k,v)=>k=='u'?undefined:v;
+let syncUrl=localStorage.getItem(SYK)||'',syState=syncUrl?'idle':'off',syncing=false,again=false,syTimer=null,SH={};
+function recMap(){const m={},J=o=>JSON.stringify(o,jr);
+ S.ex.forEach(e=>m['ex|'+e.id]=[e,J(e)]);S.inj.forEach(i=>m['inj|'+i.id]=[i,J(i)]);
+ Object.keys(S.logs).forEach(id=>Object.keys(S.logs[id]).forEach(d=>{const L=S.logs[id][d];m['tg|'+id+'|'+d]=[L,String(L.tg)];L.s.forEach((q,k)=>m['set|'+id+'|'+d+'|'+k]=[q,J(q)])}));
+ Object.keys(S.checks).forEach(id=>Object.keys(S.checks[id]).forEach(w=>m['chk|'+id+'|'+w]=[S.checks[id][w],J(S.checks[id][w])]));return m}
+function stamp(){const now=Date.now(),m=recMap();S.tomb=S.tomb||{};
+ for(const k in m){if(SH[k]===m[k][1])continue;const r=m[k][0];if(k.startsWith('set|')&&!(k in SH)&&r.v==null&&!r.d&&r.w==null)continue;r.u=now}
+ for(const k in SH)if(!(k in m)&&(k.startsWith('ex|')||k.startsWith('inj|')))S.tomb[k]=now;
+ SH={};for(const k in m)SH[k]=m[k][1]}
+function rebuildShadow(){const m=recMap();SH={};for(const k in m)SH[k]=m[k][1]}
+function mergeState(a,b){b=Object.assign({ex:[],inj:[],logs:{},checks:{},tomb:{}},b);
+ const tomb=Object.assign({},a.tomb||{});for(const k in b.tomb||{})if((tomb[k]||0)<b.tomb[k])tomb[k]=b.tomb[k];
+ const pick=(x,y)=>(y.u||0)>(x.u||0)?y:x,alive=(pre,r)=>{const t=tomb[pre+'|'+r.id];return !(t&&t>=(r.u||0))};
+ const un=(la,lb,pre)=>{const m=new Map();[...la,...lb].forEach(r=>{const o=m.get(r.id);m.set(r.id,o?pick(o,r):r)});return[...m.values()].filter(r=>alive(pre,r))};
+ const ex=un(a.ex||[],b.ex||[],'ex'),inj=un(a.inj||[],b.inj||[],'inj'),eid=new Set(ex.map(e=>e.id)),iid=new Set(inj.map(i=>i.id)),logs={},checks={};
+ new Set([...Object.keys(a.logs||{}),...Object.keys(b.logs||{})]).forEach(id=>{if(!eid.has(id))return;const A=(a.logs||{})[id]||{},B=(b.logs||{})[id]||{},o={};
+  new Set([...Object.keys(A),...Object.keys(B)]).forEach(d=>{const x=A[d],y=B[d];if(!x||!y){o[d]=x||y;return}
+   const n=Math.max(x.s.length,y.s.length),sets=[];for(let k=0;k<n;k++){const p=x.s[k],q=y.s[k];sets.push(!p?q:!q?p:pick(p,q))}
+   o[d]={s:sets,tg:pick(x,y).tg,u:Math.max(x.u||0,y.u||0)}});logs[id]=o});
+ new Set([...Object.keys(a.checks||{}),...Object.keys(b.checks||{})]).forEach(id=>{if(!iid.has(id))return;const A=(a.checks||{})[id]||{},B=(b.checks||{})[id]||{},o={};
+  new Set([...Object.keys(A),...Object.keys(B)]).forEach(w=>{const x=A[w],y=B[w];o[w]=!x?y:!y?x:pick(x,y)});checks[id]=o});
+ return{ex,inj,logs,checks,tomb}}
+function syTxt(){if(!syncUrl)return '';const t=+localStorage.getItem(SYT)||0,hm=t?new Date(t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';
+ return syState=='sync'?'Syncing…':syState=='err'?'Sync failed, will retry':syState=='off'?'':syState=='offline'?'Offline, will sync later':hm?'Synced '+hm:'Not synced yet'}
+function setSy(st){syState=st;const t=syTxt();[['#sy',t],['#syst',t||'Not connected']].forEach(([q,x])=>{const el=document.querySelector(q);if(el)el.textContent=x})}
+const rowsLog=()=>{const r=[['Date','Exercise','Injury','Set','Weight (kg)','Reps / seconds','Unit']];S.ex.forEach(e=>{const inj=S.inj.find(i=>i.id==e.inj),L=S.logs[e.id]||{};Object.keys(L).sort().forEach(d=>L[d].s.forEach((q,k)=>{if(q.d)r.push([d,e.name,inj?inj.name:'',k+1,q.w==null?'':q.w,q.v==null?'':q.v,e.type=='time'?'sec':'reps'])}))});return r};
+const rowsChk=()=>{const r=[['Week starting','Injury','Pain (0-10)','Note']];S.inj.forEach(i=>{const C=S.checks[i.id]||{};Object.keys(C).sort().forEach(w=>r.push([w,i.name,C[w].pain==null?'':C[w].pain,C[w].note||'']))});return r};
+function schedule(){if(!syncUrl)return;clearTimeout(syTimer);syTimer=setTimeout(syncNow,2500)}
+function applyMerged(m){const before=JSON.stringify(S);S=m;mig();localStorage.setItem(KEY,JSON.stringify(S));rebuildShadow();
+ if(JSON.stringify(S)!=before){const a=document.activeElement;if(!(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName))&&!$('#sheet').classList.contains('on')&&!$('#log').classList.contains('on'))render()}}
+async function syncNow(){if(!syncUrl)return;if(syncing){again=true;return}
+ if(!navigator.onLine){setSy('offline');return}
+ syncing=true;setSy('sync');let done=false;
+ try{for(let t=0;t<4&&!done;t++){
+   const r=await fetch(syncUrl+(syncUrl.includes('?')?'&':'?')+'action=get&_='+Date.now()).then(x=>x.json());
+   if(r.error)throw new Error(r.error);
+   if(r.data)applyMerged(mergeState(S,r.data));
+   const res=await fetch(syncUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({baseRev:r.rev||0,data:S,log:rowsLog(),checks:rowsChk()})}).then(x=>x.json());
+   if(res.ok){localStorage.setItem(SYT,Date.now());done=true}else if(!res.conflict)throw new Error(res.error||'save failed')}
+  setSy(done?'ok':'err')}catch(e){setSy(navigator.onLine?'err':'offline')}
+ finally{syncing=false;if(again){again=false;schedule()}}}
+const SYN=()=>`<div class="sn"><label>Google Sheet sync</label><input type="text" id="syu" inputmode="url" autocomplete="off" placeholder="Paste your Apps Script web app URL" value="${esc(syncUrl)}"><div class="syr"><button class="btn s" data-act="sysave">${syncUrl?'Save and sync':'Connect'}</button>${syncUrl?'<button class="btn g s" id="syc" data-act="sycopy">Copy setup link</button>':''}</div><small id="syst">${syTxt()||'Not connected'}</small></div>`;
+const BSY=()=>syncUrl?'':`<button class="bdp" data-act="syopen">Back up to a Google Sheet</button>`;
+rebuildShadow();
 let badgeOn=localStorage.getItem('rehab-badge')=='1',lastN=-1;
 const canNote=()=>'Notification' in window&&'serviceWorker' in navigator;
 const outstanding=()=>S.ex.filter(e=>!full(e,TODAY)&&wc(e,NOW)<e.per).length;
@@ -363,7 +411,7 @@ function injForm(id){
 function setChk(id,k,v){const c=(S.checks[id]=S.checks[id]||{});const o=c[wk]||{pain:+$('#c'+id+' input[data-act=pain]').value,note:''};o[k]=v;c[wk]=o;save();$('#c'+id).classList.remove('dim');const dt=$('#dt'+id);if(dt&&dt.textContent.startsWith('Not logged'))dt.textContent='Logged'}
 function openLog(){
  const t=document.documentElement.dataset.theme;
- $('#log').innerHTML=`<div class="bk" data-act="close"></div><div class="pan"><div class="lh"><h2>What's new</h2><button id="thm" data-act="tgl" aria-label="Switch light or dark mode">${ic(t=='dark'?'moon':'sun')}</button></div>`+CHANGES.map((c,n)=>`<div class="cv">v${c[0]}${n==0?`<span>${REL}</span>`:''}</div><p class="cp">${c[1]}</p>`).join('')+`${BDG()}<div class="acts"><button class="btn g s" data-act="exp">Back up</button><button class="btn g s" data-act="imp">Restore</button></div></div>`;
+ $('#log').innerHTML=`<div class="bk" data-act="close"></div><div class="pan"><div class="lh"><h2>What's new</h2><button id="thm" data-act="tgl" aria-label="Switch light or dark mode">${ic(t=='dark'?'moon':'sun')}</button></div>`+CHANGES.map((c,n)=>`<div class="cv">v${c[0]}${n==0?`<span>${REL}</span>`:''}</div><p class="cp">${c[1]}</p>`).join('')+`${SYN()}${BDG()}<div class="acts"><button class="btn g s" data-act="exp">Back up</button><button class="btn g s" data-act="imp">Restore</button></div></div>`;
  $('#log').classList.add('on');
 }
 function bindVer(){const v=$('#ver');let t;const s=()=>{t=setTimeout(()=>{t=0;openLog()},500)},c=()=>clearTimeout(t);
@@ -387,6 +435,13 @@ document.addEventListener('click',e=>{
  if(a=='wu'||a=='wd'){ex.weight=Math.max(0,+((ex.weight||0)+(a=='wu'?2.5:-2.5)).toFixed(1))||null;ex.wh=ex.wh.filter(h=>h.d!=cur);ex.wh.push({d:cur,w:ex.weight});save();return render()}
  if(a=='lvl'){if(b.dataset.m=='w'){ex.weight=+((ex.weight||0)+2.5).toFixed(1);ex.wh=ex.wh.filter(h=>h.d!=cur);ex.wh.push({d:cur,w:ex.weight})}else ex.reps+=ex.type=='time'?5:1;ex.snz=null;const x=rd(ex,cur);if(x)x.s.forEach(q=>{if(!q.d)q.w=null});save();return render()}
  if(a=='snz'){const l=lvl(ex);ex.snz={k:l.key,n:l.n};save();return render()}
+ if(a=='tdy'){cur=TODAY;pastAll=false;open=null;return render()}
+ if(a=='logday'){close();cur=id;pastAll=true;open=null;tab='today';render();scrollTo(0,0);return}
+ if(a=='tickall'){const be=dayAct(cur),L=lg(ex,cur);for(let k=0;k<ex.sets;k++){const q=L.s[k];if(!q.d){q.d=true;if(q.v==null||q.v==='')q.v=ex.reps;if(q.w==null)q.w=ex.weight}}L.tg=ex.reps;save();pop={id,i:-1,day:!be&&dayAct(cur)?cur:null,fin:id};return render()}
+ if(a=='syopen')return openLog();
+ if(a=='sysave'){const v=$('#syu').value.trim();if(v&&!/^https:\/\/script\.google\.com\/.+\/exec/.test(v)){setSy('err');$('#syst').textContent='That does not look like an Apps Script URL (it should end in /exec)';return}
+  syncUrl=v;localStorage.setItem(SYK,v);if(!v){setSy('off');$('#syst').textContent='Not connected';render();return}syState='idle';render();syncNow();return}
+ if(a=='sycopy'){const l=location.origin+location.pathname+'#sync='+encodeURIComponent(syncUrl);(navigator.clipboard?navigator.clipboard.writeText(l):Promise.reject()).then(()=>{b.textContent='Copied'}).catch(()=>{prompt('Copy this link',l)});return}
  if(a=='hx')return hxSheet(id);
  if(a=='xtg'){xopen=xopen==id?null:id;return render()}
  if(a=='pain'){setChk(id,'pain',+b.value);$('#s'+id).innerHTML=spark(id);return}
@@ -419,6 +474,7 @@ document.addEventListener('input',e=>{const b=e.target,a=b.dataset.act,id=b.data
  if(a=='pain'){$('#p'+id).textContent=b.value+'/10';setChk(id,'pain',+b.value)}});
 document.addEventListener('change',e=>{const b=e.target,a=b.dataset.act,id=b.dataset.id;
  if(a=='pain'){$('#s'+id).innerHTML=spark(id)}
+ if(a=='jump'&&b.value){cur=b.value>TODAY?TODAY:b.value;pastAll=true;open=null;render();scrollTo(0,0)}
  if(a=='note'){setChk(id,'note',b.value)}
  if(a=='status'){S.inj.find(x=>x.id==id).status=b.value;save()}
  if(a=='sw'){const ex=S.ex.find(x=>x.id==id),L=lg(ex,cur),j=+b.dataset.i,v=b.value===''?null:(Math.max(0,+b.value)||null);L.s[j].w=v;ex.weight=v;L.s.forEach(s=>{if(!s.d)s.w=null});ex.wh=ex.wh.filter(h=>h.d!=cur);ex.wh.push({d:cur,w:v});save();
@@ -455,7 +511,8 @@ pg.addEventListener('touchmove',e=>{
 pg.addEventListener('touchend',()=>swEnd(false));
 pg.addEventListener('touchcancel',()=>swEnd(true));
 function refreshDay(){const nd=iso(new Date());if(nd!=TODAY){TODAY=nd;NOW=mon(nd);cur=TODAY;wk=NOW;pastAll=false;lastN=-1}render()}
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshDay()});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){refreshDay();syncNow()}});
+if(syncUrl)setTimeout(syncNow,700);setInterval(()=>{if(!document.hidden)syncNow()},120000);addEventListener('online',()=>syncNow());try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 const hideSplash=()=>{const sp=$('#splash');if(sp){sp.classList.add('off');setTimeout(()=>sp.remove(),500)}};
 $('#splash').addEventListener('click',hideSplash);setTimeout(hideSplash,rm()?700:1900);
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').then(()=>{if(badgeOn&&canNote())navigator.serviceWorker.ready.then(r=>{if(r.periodicSync)r.periodicSync.register('reform-left',{minInterval:12*36e5}).catch(()=>{})})}).catch(()=>{});
