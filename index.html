@@ -173,7 +173,7 @@ main{padding-top:8px}.nav{margin-bottom:8px}.nav button{width:36px;height:36px}
 @keyframes sdp{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
 @keyframes sfi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 .bdp{display:block;margin:18px auto 0;font-size:13px;color:var(--ac);font-weight:600;padding:8px 14px;border-radius:99px;background:var(--acs)}.bdp+#ver{margin-top:8px}.bd small{font-size:12px}
-.sn{margin-top:14px}.sn label{display:block;font-size:12px;color:var(--mut);margin-bottom:4px}.sn input{width:100%;padding:9px 10px;font-size:16px;border-radius:10px;background:var(--bg);border:1px solid var(--ln);outline:0}.sn input:focus{border-color:var(--ac)}.syr{display:flex;gap:8px;margin-top:8px}.sn small{display:block;margin-top:6px;color:var(--mut);font-size:12px}.sy{text-align:center;font-size:11px;color:var(--mut);margin-top:-2px;min-height:14px}
+.sn{margin-top:14px}.sn label{display:block;font-size:12px;color:var(--mut);margin-bottom:4px}.sn input{width:100%;padding:9px 10px;font-size:16px;border-radius:10px;background:var(--bg);border:1px solid var(--ln);outline:0}.sn input:focus{border-color:var(--ac)}.syr{display:flex;gap:8px;margin-top:8px}.sn small{display:block;margin-top:6px;color:var(--mut);font-size:12px}#ver{display:flex;align-items:center;justify-content:center;gap:6px}.sd{width:6px;height:6px;border-radius:50%;background:var(--mut);opacity:.5;flex:none;transition:background .3s,opacity .3s}.sd.off{display:none}.sd.ok{background:var(--ok);opacity:1}.sd.er{background:var(--warn);opacity:1}.sd.sy2{background:#e0a030;opacity:1;animation:sdb 1s ease-in-out infinite}@keyframes sdb{50%{opacity:.3}}
 .dh{display:flex;align-items:center;justify-content:space-between}.dh .lk{padding:0;font-size:13px}.hxh{display:flex;align-items:center;justify-content:space-between;gap:8px}.hxh .grp{margin:12px 4px 4px}.jd{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mut);margin-top:6px}.jd input{width:auto;padding:5px 8px;font-size:14px;border-radius:8px;background:var(--bg);border:1px solid var(--ln);color:var(--tx)}.wdh{display:flex;align-items:center;justify-content:space-between;margin:12px 0 2px}.wd .wdh b{display:inline;margin:0}.wdh button{color:var(--ac);font-size:13px;font-weight:600;padding:2px 0}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head>
@@ -184,11 +184,11 @@ main{padding-top:8px}.nav{margin-bottom:8px}.nav button{width:36px;height:36px}
 <div id="sheet"></div><div id="log"></div>
 <input type="file" id="imp" accept=".json" hidden>
 <script>
-const VER='1.10.0',REL='10 Nov 2026';
+const VER='1.10.1',REL='10 Nov 2026';
 const CHANGES=[
+['1.10.1','Sync status is now a small dot beside the version number.'],
 ['1.10.0','Log exercises on any past day: pick a date, or tap a week and "+ Log". New Tick all button and Back to today.'],
-['1.9.0','Google Sheet sync that merges edits from every device, with daily backups in your sheet.'],
-['1.8.1','Icon badge now works on Android through a notification. Simpler first-dot animation on the splash.']];
+['1.9.0','Google Sheet sync that merges edits from every device, with daily backups in your sheet.']];
 const $=s=>document.querySelector(s),KEY='rehab-data-v1';
 const P={plus:'<path d="M12 5v14M5 12h14"/>',minus:'<path d="M5 12h14"/>',l:'<path d="M15 18l-6-6 6-6"/>',r:'<path d="M9 18l6-6-6-6"/>',dn:'<path d="M6 9l6 6 6-6"/>',
 check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',play:'<path d="M8 5.5v13l11-6.5z"/>',stop:'<rect x="6.5" y="6.5" width="11" height="11" rx="2"/>',
@@ -235,7 +235,7 @@ function theme(t){if(t)localStorage.setItem('rehab-theme',t);const v=localStorag
 theme();
 
 const ORDER=['today','inj','ex'];
-const pageHtml=t=>({today:vToday,inj:vInj,ex:vEx})[t]()+(t=='today'?BSY()+BDP()+`<button id="ver">v${VER}</button><div id="sy" class="sy">${syTxt()}</div>`:'');
+const pageHtml=t=>({today:vToday,inj:vInj,ex:vEx})[t]()+(t=='today'?BSY()+BDP()+`<button id="ver" aria-label="v${VER}${syTxt()?', '+syTxt():''}">v${VER}<i class="sd ${dotCls()}" title="${esc(syTxt())}"></i></button>`:'');
 const TABS=[['today','Dashboard','dash'],['inj','Injuries','inj'],['ex','Exercises','ex']];
 $('#tabs').innerHTML=TABS.map(t=>`<button data-act="tab" data-id="${t[0]}">${ic(t[2])}${t[1]}</button>`).join('');
 function render(){
@@ -330,7 +330,9 @@ function mergeState(a,b){b=Object.assign({ex:[],inj:[],logs:{},checks:{},tomb:{}
  return{ex,inj,logs,checks,tomb}}
 function syTxt(){if(!syncUrl)return '';const t=+localStorage.getItem(SYT)||0,hm=t?new Date(t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';
  return syState=='sync'?'Syncing…':syState=='err'?'Sync failed, will retry':syState=='off'?'':syState=='offline'?'Offline, will sync later':hm?'Synced '+hm:'Not synced yet'}
-function setSy(st){syState=st;const t=syTxt();[['#sy',t],['#syst',t||'Not connected']].forEach(([q,x])=>{const el=document.querySelector(q);if(el)el.textContent=x})}
+const dotCls=()=>syState=='off'?'off':syState=='ok'?'ok':syState=='sync'?'sy2':syState=='err'?'er':'idle';
+function setSy(st){syState=st;const t=syTxt(),el=document.querySelector('#syst');if(el)el.textContent=t||'Not connected';
+ const d=document.querySelector('#ver .sd');if(d){d.className='sd '+dotCls();d.title=t}const v=document.querySelector('#ver');if(v)v.setAttribute('aria-label','v'+VER+(t?', '+t:''))}
 const rowsLog=()=>{const r=[['Date','Exercise','Injury','Set','Weight (kg)','Reps / seconds','Unit']];S.ex.forEach(e=>{const inj=S.inj.find(i=>i.id==e.inj),L=S.logs[e.id]||{};Object.keys(L).sort().forEach(d=>L[d].s.forEach((q,k)=>{if(q.d)r.push([d,e.name,inj?inj.name:'',k+1,q.w==null?'':q.w,q.v==null?'':q.v,e.type=='time'?'sec':'reps'])}))});return r};
 const rowsChk=()=>{const r=[['Week starting','Injury','Pain (0-10)','Note']];S.inj.forEach(i=>{const C=S.checks[i.id]||{};Object.keys(C).sort().forEach(w=>r.push([w,i.name,C[w].pain==null?'':C[w].pain,C[w].note||'']))});return r};
 function schedule(){if(!syncUrl)return;clearTimeout(syTimer);syTimer=setTimeout(syncNow,2500)}
